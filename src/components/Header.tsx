@@ -5,9 +5,10 @@ type Props = {
   currentUser: AuthData | null;
   onLoginClick: () => void;
   onLogout: () => void;
+  onHomeClick: () => void;
 };
 
-export default function Header({ currentUser, onLoginClick, onLogout }: Props) {
+export default function Header({ currentUser, onLoginClick, onLogout, onHomeClick }: Props) {
   const handleLogout = () => {
     clearSession();
     onLogout();
@@ -22,7 +23,11 @@ export default function Header({ currentUser, onLoginClick, onLogout }: Props) {
         boxShadow: '0 2px 12px rgba(100,65,15,0.12)',
       }}>
       {/* 로고 */}
-      <div className="flex items-center gap-2.5">
+      <button
+        type="button"
+        onClick={onHomeClick}
+        className="flex items-center gap-2.5 rounded text-left focus:outline-none focus:ring-2 focus:ring-[#3d2b1f]/30"
+      >
         <div className="w-8 h-8 rounded flex items-center justify-center font-serif-kr font-black text-xs text-[#f5e8d0]"
           style={{ background: 'linear-gradient(135deg, #8b1a1a, #6b1010)', boxShadow: '0 1px 4px rgba(0,0,0,0.3)' }}>
           龍
@@ -30,7 +35,7 @@ export default function Header({ currentUser, onLoginClick, onLogout }: Props) {
         <p className="text-[#3d2b1f] text-sm font-bold font-serif-kr leading-tight tracking-wider">
           융과 사는 남자
         </p>
-      </div>
+      </button>
 
       {/* 우측: 로그인 상태에 따라 변경 */}
       {currentUser ? (
