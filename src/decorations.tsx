@@ -168,9 +168,8 @@ export function SectionOrnamentDivider({ className = '' }: { className?: string 
   );
 }
 
-export function GoldCornerFrame({ className = '' }: { className?: string }) {
-  /* 금색 코너 프레임 장식 */
-  const Corner = ({ rot }: { rot: string }) => (
+function GoldCorner({ rot }: { rot: string }) {
+  return (
     <svg width="36" height="36" viewBox="0 0 36 36" aria-hidden="true"
       style={{ transform: rot }}>
       <path d="M4 4 L4 20 M4 4 L20 4" stroke="#c9a84c" strokeWidth="2.8" strokeLinecap="square" />
@@ -178,12 +177,15 @@ export function GoldCornerFrame({ className = '' }: { className?: string }) {
       <circle cx="4" cy="4" r="1.5" fill="#f5e0a0" />
     </svg>
   );
+}
+
+export function GoldCornerFrame({ className = '' }: { className?: string }) {
   return (
     <div className={`absolute inset-0 pointer-events-none ${className}`}>
-      <div className="absolute top-3 left-3"><Corner rot="rotate(0deg)" /></div>
-      <div className="absolute top-3 right-3"><Corner rot="rotate(90deg)" /></div>
-      <div className="absolute bottom-3 left-3"><Corner rot="rotate(-90deg)" /></div>
-      <div className="absolute bottom-3 right-3"><Corner rot="rotate(180deg)" /></div>
+      <div className="absolute top-3 left-3"><GoldCorner rot="rotate(0deg)" /></div>
+      <div className="absolute top-3 right-3"><GoldCorner rot="rotate(90deg)" /></div>
+      <div className="absolute bottom-3 left-3"><GoldCorner rot="rotate(-90deg)" /></div>
+      <div className="absolute bottom-3 right-3"><GoldCorner rot="rotate(180deg)" /></div>
     </div>
   );
 }
