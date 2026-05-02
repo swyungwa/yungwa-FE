@@ -1,111 +1,88 @@
-:root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+@import "tailwindcss";
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
+@layer base {
+  * { box-sizing: border-box; }
 
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  body {
+    margin: 0;
+    font-family: 'Noto Sans KR', sans-serif;
+    background-color: #ece0b8;
+    background-image:
+      repeating-linear-gradient(
+        110deg,
+        transparent 0, transparent 7px,
+        rgba(120, 75, 20, 0.028) 7px, rgba(120, 75, 20, 0.028) 8px
+      ),
+      repeating-linear-gradient(
+        -70deg,
+        transparent 0, transparent 13px,
+        rgba(100, 55, 10, 0.02) 13px, rgba(100, 55, 10, 0.02) 14px
+      ),
+      linear-gradient(180deg, #e5d09a 0%, #ece0b8 35%, #ede0bc 100%);
+  }
 
-  @media (max-width: 1024px) {
-    font-size: 16px;
+  #root { width: 100%; max-width: 100%; }
+}
+
+@layer utilities {
+  .font-serif-kr {
+    font-family: 'Noto Serif KR', serif;
+  }
+
+  /* 한지 질감 섹션 배경 */
+  .hanji-section {
+    background-color: #ede0b8;
+    background-image:
+      repeating-linear-gradient(
+        108deg,
+        transparent 0, transparent 8px,
+        rgba(130, 85, 20, 0.025) 8px, rgba(130, 85, 20, 0.025) 9px
+      );
+  }
+
+  /* 두루마리 느낌 섹션 */
+  .scroll-section {
+    background-color: #f5ecd6;
+    background-image:
+      repeating-linear-gradient(
+        90deg,
+        transparent 0, transparent 2px,
+        rgba(160, 110, 40, 0.035) 2px, rgba(160, 110, 40, 0.035) 3px
+      ),
+      linear-gradient(180deg, #e8d4a0 0%, #f5ecd6 8%, #f5ecd6 92%, #e8d4a0 100%);
+  }
+
+  /* 격자 카드 배경 */
+  .lattice-bg {
+    background-image:
+      repeating-linear-gradient(0deg, rgba(160,110,40,0.06) 0, rgba(160,110,40,0.06) 1px, transparent 1px, transparent 20px),
+      repeating-linear-gradient(90deg, rgba(160,110,40,0.06) 0, rgba(160,110,40,0.06) 1px, transparent 1px, transparent 20px);
+  }
+
+  .card-shadow {
+    box-shadow:
+      0 2px 8px rgba(80, 50, 10, 0.10),
+      0 8px 24px rgba(80, 50, 10, 0.08),
+      inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  }
+
+  .card-shadow-lg {
+    box-shadow:
+      0 4px 12px rgba(80, 50, 10, 0.12),
+      0 12px 32px rgba(80, 50, 10, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  }
+
+  .ink-border {
+    border: 1.5px solid rgba(80, 50, 10, 0.18);
+  }
+
+  /* 구름/파도 모양 divider */
+  .cloud-clip {
+    clip-path: ellipse(55% 60% at 50% 100%);
   }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
-}
-
-#root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-}
-
-h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
-}
-
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
-}
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
-}
-p {
-  margin: 0;
-}
-
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
-}
-
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
-}
+/* 스크롤바 숨김 */
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
