@@ -1,7 +1,12 @@
 import { motion } from 'framer-motion';
 import { PlumBranch, HanokRoofDecor, CloudWaveDivider, CloudCluster, GoldCornerFrame, CraneDecor } from '../decorations';
 
-export default function HeroSection() {
+type Props = {
+  onTestClick: () => void;
+  onBrowseClick: () => void;
+};
+
+export default function HeroSection({ onTestClick, onBrowseClick }: Props) {
   return (
     <section className="relative w-full overflow-hidden"
       style={{
@@ -100,7 +105,9 @@ export default function HeroSection() {
           className="flex flex-col sm:flex-row gap-3 w-full max-w-[360px]"
         >
           {/* 테스트 시작 — 적색 */}
-          <button className="flex-1 flex items-center justify-center gap-2 font-serif-kr font-bold text-base text-[#f5e8d0] py-5 px-6 rounded-xl transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
+          <button
+            onClick={onTestClick}
+            className="flex-1 flex items-center justify-center gap-2 font-serif-kr font-bold text-base text-[#f5e8d0] py-5 px-6 rounded-xl transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
             style={{
               background: 'linear-gradient(160deg, #c41e32 0%, #8b1220 100%)',
               boxShadow: '0 6px 20px rgba(140,18,32,0.5), 0 1px 0 rgba(255,255,255,0.15) inset',
@@ -110,7 +117,9 @@ export default function HeroSection() {
             테스트 시작하기
           </button>
           {/* 카드 둘러보기 — 남색 */}
-          <button className="flex-1 flex items-center justify-center gap-2 font-serif-kr font-bold text-base text-[#f5e8d0] py-5 px-6 rounded-xl transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
+          <button
+            onClick={onBrowseClick}
+            className="flex-1 flex items-center justify-center gap-2 font-serif-kr font-bold text-base text-[#f5e8d0] py-5 px-6 rounded-xl transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
             style={{
               background: 'linear-gradient(160deg, #1e3a6e 0%, #132548 100%)',
               boxShadow: '0 6px 20px rgba(20,37,72,0.45), 0 1px 0 rgba(255,255,255,0.1) inset',

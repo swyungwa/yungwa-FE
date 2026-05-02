@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { MountainSilhouette, SectionOrnamentDivider } from './decorations';
 import Header from './components/Header';
 import HeroSection from './components/HeroSection';
@@ -5,8 +6,21 @@ import LoveTypeSection from './components/LoveTypeSection';
 import ActionSection from './components/ActionSection';
 import GuideSection from './components/GuideSection';
 import Footer from './components/Footer';
+import LoginModal from './components/LoginModal';
+import { getSession } from './services/auth';
+import type { AuthData } from './types/auth';
+
+type ModalState = 'none' | 'login';
 
 export default function App() {
+  const [modal, setModal] = useState<ModalState>('none');
+  const [currentUser, setCurrentUser] = useState<AuthData | null>(getSession);
+
+  const handleAuthSuccess = (data: AuthData) => {
+    setCurrentUser(data);
+    setModal('none');
+  };
+
   return (
     <div className="relative min-h-screen w-full overflow-x-hidden">
       {/* 좌우 산수화 장식 — lg 이상에서만 표시 */}
@@ -23,9 +37,16 @@ export default function App() {
 
       {/* 메인 콘텐츠 컨테이너 */}
       <div className="relative z-10 w-full max-w-[680px] mx-auto flex flex-col min-h-screen">
-        <Header />
+        <Header
+          currentUser={currentUser}
+          onLoginClick={() => setModal('login')}
+          onLogout={() => setCurrentUser(null)}
+        />
         <main className="flex-1 flex flex-col">
-          <HeroSection />
+          <HeroSection
+            onTestClick={() => {}}
+            onBrowseClick={() => {}}
+          />
           <SectionOrnamentDivider className="py-2" />
           <LoveTypeSection />
           <SectionOrnamentDivider className="py-2" />
@@ -35,6 +56,14 @@ export default function App() {
         </main>
         <Footer />
       </div>
+
+      {/* 모달 */}
+      {modal === 'login' && (
+        <LoginModal
+          onClose={() => setModal('none')}
+          onSuccess={handleAuthSuccess}
+        />
+      )}
     </div>
   );
 }
