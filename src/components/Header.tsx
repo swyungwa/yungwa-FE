@@ -1,4 +1,18 @@
-export default function Header() {
+import type { AuthData } from '../types/auth';
+import { clearSession } from '../services/auth';
+
+type Props = {
+  currentUser: AuthData | null;
+  onLoginClick: () => void;
+  onLogout: () => void;
+};
+
+export default function Header({ currentUser, onLoginClick, onLogout }: Props) {
+  const handleLogout = () => {
+    clearSession();
+    onLogout();
+  };
+
   return (
     <header className="w-full px-5 py-3 flex items-center justify-between sticky top-0 z-50"
       style={{
@@ -9,35 +23,52 @@ export default function Header() {
       }}>
       {/* 로고 */}
       <div className="flex items-center gap-2.5">
-        {/* 전통 도장 느낌 뱃지 */}
         <div className="w-8 h-8 rounded flex items-center justify-center font-serif-kr font-black text-xs text-[#f5e8d0]"
           style={{ background: 'linear-gradient(135deg, #8b1a1a, #6b1010)', boxShadow: '0 1px 4px rgba(0,0,0,0.3)' }}>
           龍
         </div>
-        <div>
-          <p className="text-[#3d2b1f] text-sm font-bold font-serif-kr leading-tight tracking-wider">
-            융과 사는 남자
-          </p>
-        </div>
+        <p className="text-[#3d2b1f] text-sm font-bold font-serif-kr leading-tight tracking-wider">
+          융과 사는 남자
+        </p>
       </div>
-      {/* 로그인 버튼 */}
-      <button
-        className="px-4 py-1.5 font-serif-kr text-xs font-bold tracking-wider text-[#3d2b1f] rounded transition-all duration-200 hover:text-[#f5e8d0]"
-        style={{
-          border: '1.5px solid rgba(100,65,15,0.4)',
-          background: 'rgba(240,220,170,0.5)',
-        }}
-        onMouseEnter={e => {
-          (e.currentTarget as HTMLButtonElement).style.background = '#3d2b1f';
-          (e.currentTarget as HTMLButtonElement).style.borderColor = '#3d2b1f';
-        }}
-        onMouseLeave={e => {
-          (e.currentTarget as HTMLButtonElement).style.background = 'rgba(240,220,170,0.5)';
-          (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(100,65,15,0.4)';
-        }}
-      >
-        로그인
-      </button>
+
+      {/* 우측: 로그인 상태에 따라 변경 */}
+      {currentUser ? (
+        <div className="flex items-center gap-2">
+          <span className="text-[#3d2b1f] text-xs font-sans">
+            @{currentUser.instagramId}
+          </span>
+          <button
+            onClick={handleLogout}
+            className="px-3 py-1.5 font-serif-kr text-xs font-bold tracking-wider text-[#7a5530] rounded transition-all duration-200"
+            style={{
+              border: '1.5px solid rgba(100,65,15,0.3)',
+              background: 'rgba(240,220,170,0.4)',
+            }}
+          >
+            로그아웃
+          </button>
+        </div>
+      ) : (
+        <button
+          onClick={onLoginClick}
+          className="px-4 py-1.5 font-serif-kr text-xs font-bold tracking-wider text-[#3d2b1f] rounded transition-all duration-200 hover:text-[#f5e8d0]"
+          style={{
+            border: '1.5px solid rgba(100,65,15,0.4)',
+            background: 'rgba(240,220,170,0.5)',
+          }}
+          onMouseEnter={e => {
+            (e.currentTarget as HTMLButtonElement).style.background = '#3d2b1f';
+            (e.currentTarget as HTMLButtonElement).style.borderColor = '#3d2b1f';
+          }}
+          onMouseLeave={e => {
+            (e.currentTarget as HTMLButtonElement).style.background = 'rgba(240,220,170,0.5)';
+            (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(100,65,15,0.4)';
+          }}
+        >
+          로그인
+        </button>
+      )}
     </header>
   );
 }
