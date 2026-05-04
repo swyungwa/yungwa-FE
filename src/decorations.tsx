@@ -68,7 +68,7 @@ export function PlumBranch({ className = '', flip = false }: { className?: strin
 export function HanokRoofDecor({ className = '' }: { className?: string }) {
   /* 한옥 처마 윤곽 */
   return (
-    <svg width="240" height="130" viewBox="0 0 240 130" fill="none" aria-hidden="true"
+    <svg width="240" height="130" viewBox="-12 0 264 130" fill="none" aria-hidden="true"
       className={className}>
       {/* 지붕 곡선 */}
       <path d="M0 100 Q60 48 120 36 Q180 22 240 72"
