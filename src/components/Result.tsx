@@ -1,7 +1,5 @@
-import type { LoveType } from '../data/loveTest';
-
 type CharacterProfile = {
-  name: LoveType;
+  name: string;
   romanized: string;
   keyword: string;
   description: string;
@@ -10,13 +8,12 @@ type CharacterProfile = {
 };
 
 type ResultProps = {
-  resultType: LoveType;
   profile: CharacterProfile;
   onRestart: () => void;
   onRegister: () => void;
 };
 
-export default function Result({ resultType, profile, onRestart, onRegister }: ResultProps) {
+export default function Result({ profile, onRestart, onRegister }: ResultProps) {
   return (
     <div className="rounded-xl bg-[#fffaf0] ink-border card-shadow-lg overflow-hidden text-center">
       <div
@@ -24,13 +21,13 @@ export default function Result({ resultType, profile, onRestart, onRegister }: R
         style={{ background: `linear-gradient(135deg, ${profile.color} 0%, ${profile.color}dd 100%)` }}
       >
         <p className="font-mono text-xs font-bold tracking-[0.22em] text-white/65">YOUR LOVE TYPE</p>
-        <h3 className="mt-2 font-serif-kr text-5xl font-black">{resultType}</h3>
+        <h3 className="mt-2 font-serif-kr text-5xl font-black">{profile.name}</h3>
         <p className="mt-1 font-mono text-xs font-bold tracking-[0.28em] text-white/60">{profile.romanized}</p>
       </div>
 
       <div className="px-5 py-7 sm:px-6">
         <div className="mx-auto flex h-44 max-w-[240px] items-end justify-center overflow-hidden rounded-xl border border-[#d4b87a] bg-[#f3e2b9]">
-          <img src={profile.image} alt={resultType} className="h-full w-full object-contain object-bottom" />
+          <img src={profile.image} alt={profile.name} className="h-full w-full object-contain object-bottom" />
         </div>
 
         <p className="mt-5 inline-flex rounded-full px-3 py-1 text-sm font-black" style={{ background: `${profile.color}18`, color: profile.color }}>

@@ -1,10 +1,10 @@
-import type { LoveQuestion, QuestionOption } from '../data/loveTest';
+import type { Answer, Question as LoveQuestion } from '../data/loveTest';
 
 type QuestionProps = {
   question: LoveQuestion;
   currentIndex: number;
   totalCount: number;
-  onSelect: (option: QuestionOption) => void;
+  onSelect: (answer: Answer) => void;
 };
 
 export default function Question({ question, currentIndex, totalCount, onSelect }: QuestionProps) {
@@ -25,18 +25,18 @@ export default function Question({ question, currentIndex, totalCount, onSelect 
         </h3>
 
         <div className="mt-7 grid gap-3">
-          {question.options.map((option) => (
+          {question.answers.map((answer) => (
             <button
-              key={option.text}
+              key={answer.text}
               type="button"
-              onClick={() => onSelect(option)}
+              onClick={() => onSelect(answer)}
               className="group rounded-lg border border-[#d4b87a] bg-[#fffdf7] px-4 py-4 text-left text-sm font-bold leading-relaxed text-[#4b301b] transition duration-200 hover:-translate-y-0.5 hover:border-[#ab1729] hover:bg-[#fff3e0] hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#ab1729]/35"
             >
               <span className="flex items-start gap-3">
                 <span className="mt-0.5 inline-flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-[#ead097] text-xs text-[#6b421d] transition group-hover:bg-[#ab1729] group-hover:text-white">
                   선택
                 </span>
-                <span>{option.text}</span>
+                <span>{answer.text}</span>
               </span>
             </button>
           ))}
@@ -45,4 +45,3 @@ export default function Question({ question, currentIndex, totalCount, onSelect 
     </div>
   );
 }
-

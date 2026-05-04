@@ -10,21 +10,21 @@ type CardRegisterPageProps = {
 };
 
 const LOVE_TYPE_LABELS: Record<TestLoveType, string> = {
-  사또: '사또형',
-  장군: '장군형',
-  양반: '양반형',
-  돌쇠: '돌쇠형',
-  왕족: '왕족형',
-  광대: '광대형',
+  satto: '사또형',
+  general: '장군형',
+  yangban: '양반형',
+  dolsoe: '돌쇠형',
+  royal: '왕족형',
+  clown: '광대형',
 };
 
 const API_LOVE_TYPE_MAP: Record<TestLoveType, ApiLoveType> = {
-  양반: 'YANGBAN',
-  장군: 'JANGGUN',
-  사또: 'SATTO',
-  돌쇠: 'DOLSOE',
-  왕족: 'WANGJOK',
-  광대: 'GWANGDAE',
+  yangban: 'YANGBAN',
+  general: 'JANGGUN',
+  satto: 'SATTO',
+  dolsoe: 'DOLSOE',
+  royal: 'WANGJOK',
+  clown: 'GWANGDAE',
 };
 
 const inputStyle = {

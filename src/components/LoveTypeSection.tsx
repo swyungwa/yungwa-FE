@@ -3,17 +3,18 @@ import { motion } from 'framer-motion';
 import Question from './Question';
 import Result from './Result';
 import {
+  calculateNextScores,
   createInitialScores,
   getTopType,
   questions,
+  type Answer,
   type LoveType,
-  type QuestionOption,
   type ScoreMap,
 } from '../data/loveTest';
 
 
 const LOVE_TYPE_PROFILES: Record<LoveType, {
-  name: LoveType;
+  name: string;
   romanized: string;
   keyword: string;
   hanja: string;
@@ -22,7 +23,7 @@ const LOVE_TYPE_PROFILES: Record<LoveType, {
   imageScale: number;
   color: string;
 }> = {
-  양반: {
+  yangban: {
     name: '양반',
     romanized: 'YANGBAN',
     keyword: '신중/체면',
@@ -32,7 +33,7 @@ const LOVE_TYPE_PROFILES: Record<LoveType, {
     imageScale: 1,
     color: '#1e50a2',
   },
-  장군: {
+  general: {
     name: '장군',
     romanized: 'JANGGUN',
     keyword: '직진/용맹',
@@ -42,7 +43,7 @@ const LOVE_TYPE_PROFILES: Record<LoveType, {
     imageScale: 1,
     color: '#ab1729',
   },
-  사또: {
+  satto: {
     name: '사또',
     romanized: 'SATTO',
     keyword: '주도/통제',
@@ -52,7 +53,7 @@ const LOVE_TYPE_PROFILES: Record<LoveType, {
     imageScale: 1,
     color: '#1a6b2a',
   },
-  돌쇠: {
+  dolsoe: {
     name: '돌쇠',
     romanized: 'DOLSOE',
     keyword: '헌신/순정',
@@ -62,7 +63,7 @@ const LOVE_TYPE_PROFILES: Record<LoveType, {
     imageScale: 1,
     color: '#b87a1a',
   },
-  왕족: {
+  royal: {
     name: '왕족',
     romanized: 'WANGJOK',
     keyword: '고귀/도도',
@@ -72,7 +73,7 @@ const LOVE_TYPE_PROFILES: Record<LoveType, {
     imageScale: 1,
     color: '#5c2d8a',
   },
-  광대: {
+  clown: {
     name: '광대',
     romanized: 'GWANGDAE',
     keyword: '재치/자유',
@@ -97,16 +98,12 @@ export default function LoveTypeSection({ onRegister }: LoveTypeSectionProps) {
   const progressPercent = ((currentIndex + 1) / questions.length) * 100;
   const resultProfile = resultType ? LOVE_TYPE_PROFILES[resultType] : null;
 
-  const handleSelect = (option: QuestionOption) => {
-    const nextScores = { ...scores };
-
-    option.type.forEach((type) => {
-      nextScores[type] += 1;
-    });
+  const handleSelect = (answer: Answer) => {
+    const nextScores = calculateNextScores(scores, answer);
 
     if (currentIndex === questions.length - 1) {
       setScores(nextScores);
-      setResultType(getTopType(nextScores));
+      setResultType(getTopType(nextScores, answer.types));
       return;
     }
 
@@ -140,7 +137,7 @@ export default function LoveTypeSection({ onRegister }: LoveTypeSectionProps) {
           style={{ textShadow: '1px 1px 0 rgba(201,168,76,0.3)' }}>
           연애 유형 테스트
         </h2>
-        <p className="text-[#8b6b45] text-sm font-sans">여섯 문답으로 알아보는 나의 조선 연애 캐릭터</p>
+        <p className="text-[#8b6b45] text-sm font-sans">열 문답으로 알아보는 나의 조선 연애 캐릭터</p>
       </motion.div>
 
       <div className="relative mx-4 rounded-xl overflow-hidden"
@@ -168,7 +165,6 @@ export default function LoveTypeSection({ onRegister }: LoveTypeSectionProps) {
 
           {resultType && resultProfile ? (
             <Result
-              resultType={resultType}
               profile={resultProfile}
               onRestart={handleRestart}
               onRegister={() => onRegister(resultType)}
