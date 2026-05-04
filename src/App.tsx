@@ -1,47 +1,34 @@
 import { useEffect, useState } from 'react';
-import { MountainSilhouette, SectionOrnamentDivider } from './decorations';
-import Header from './components/Header';
+import { MountainSilhouette } from './decorations';
 import HeroSection from './components/HeroSection';
+import TypePreviewSection from './components/TypePreviewSection';
 import LoveTypeSection from './components/LoveTypeSection';
 import CardRegisterPage from './components/CardRegisterPage';
-import ActionSection from './components/ActionSection';
-import GuideSection from './components/GuideSection';
+import CardBrowsePage from './components/CardBrowsePage';
 import Footer from './components/Footer';
-import LoginModal from './components/LoginModal';
 import { getSession } from './services/auth';
+import { types } from './data/loveTest';
 import type { AuthData } from './types/auth';
 import type { LoveType } from './data/loveTest';
 
-type ModalState = 'none' | 'login';
-type PageState = 'home' | 'test' | 'register';
+type PageState = 'home' | 'test' | 'register' | 'cards';
 
 const LOVE_TYPE_STORAGE_KEY = 'testResultLoveType';
 
 const getPageFromPath = (): PageState => {
   if (window.location.pathname === '/test') return 'test';
   if (window.location.pathname === '/register') return 'register';
+  if (window.location.pathname === '/cards') return 'cards';
   return 'home';
 };
 
 const getStoredLoveType = (): LoveType | null => {
   const value = sessionStorage.getItem(LOVE_TYPE_STORAGE_KEY);
-  if (
-    value === '사또' ||
-    value === '장군' ||
-    value === '양반' ||
-    value === '돌쇠' ||
-    value === '왕족' ||
-    value === '광대'
-  ) {
-    return value;
-  }
-
-  return null;
+  return types.includes(value as LoveType) ? (value as LoveType) : null;
 };
 
 export default function App() {
-  const [modal, setModal] = useState<ModalState>('none');
-  const [currentUser, setCurrentUser] = useState<AuthData | null>(getSession);
+  const [, setCurrentUser] = useState<AuthData | null>(getSession);
   const [page, setPage] = useState<PageState>(getPageFromPath);
   const [testResultType, setTestResultType] = useState<LoveType | null>(getStoredLoveType);
 
@@ -53,11 +40,6 @@ export default function App() {
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
-
-  const handleAuthSuccess = (data: AuthData) => {
-    setCurrentUser(data);
-    setModal('none');
-  };
 
   const handleRegisterComplete = (data: AuthData) => {
     setCurrentUser(data);
@@ -72,7 +54,14 @@ export default function App() {
   };
 
   const moveToPage = (nextPage: PageState) => {
-    const nextPath = nextPage === 'test' ? '/test' : nextPage === 'register' ? '/register' : '/';
+    const nextPath =
+      nextPage === 'test'
+        ? '/test'
+        : nextPage === 'register'
+          ? '/register'
+          : nextPage === 'cards'
+            ? '/cards'
+            : '/';
 
     if (window.location.pathname !== nextPath) {
       window.history.pushState(null, '', nextPath);
@@ -98,44 +87,33 @@ export default function App() {
 
       {/* 메인 콘텐츠 컨테이너 */}
       <div className="relative z-10 w-full max-w-[680px] mx-auto flex flex-col min-h-screen">
-        <Header
-          currentUser={currentUser}
-          onLoginClick={() => setModal('login')}
-          onLogout={() => setCurrentUser(null)}
-          onHomeClick={() => moveToPage('home')}
-        />
         <main className="flex-1 flex flex-col">
           {page === 'home' ? (
             <>
               <HeroSection
                 onTestClick={() => moveToPage('test')}
-                onBrowseClick={() => moveToPage('test')}
+                onCreateClick={() => moveToPage('test')}
+                onBrowseClick={() => moveToPage('cards')}
               />
-              <SectionOrnamentDivider className="py-2" />
-              <ActionSection />
-              <SectionOrnamentDivider className="py-2" />
-              <GuideSection />
+              <TypePreviewSection />
             </>
           ) : page === 'test' ? (
             <LoveTypeSection onRegister={handleCardRegisterClick} />
-          ) : (
+          ) : page === 'register' ? (
             <CardRegisterPage
               resultType={testResultType}
               onComplete={handleRegisterComplete}
               onBackToTest={() => moveToPage('test')}
             />
+          ) : (
+            <CardBrowsePage
+              onBackHome={() => moveToPage('home')}
+              onStartTest={() => moveToPage('test')}
+            />
           )}
         </main>
         <Footer />
       </div>
-
-      {/* 모달 */}
-      {modal === 'login' && (
-        <LoginModal
-          onClose={() => setModal('none')}
-          onSuccess={handleAuthSuccess}
-        />
-      )}
     </div>
   );
 }
