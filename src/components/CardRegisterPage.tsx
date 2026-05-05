@@ -1,8 +1,10 @@
-import { useMemo, useState, type FormEvent } from 'react';
-import { saveSession } from '../services/auth';
+import { useEffect, useMemo, useState, type FormEvent } from 'react';
+import { getCurrentUser, saveSession, signup } from '../services/auth';
+import { grantTicket } from '../services/tickets';
+import { isApiError } from '../lib/api';
 import { CloudCluster, CraneDecor, GoldCornerFrame, HanokRoofDecor, PlumBranch } from '../decorations';
-import type { AuthData, Gender, LoveType as ApiLoveType, SignupRequest } from '../types/auth';
-import type { LoveType as TestLoveType } from '../data/loveTest';
+import type { AuthData, Gender, SignupRequest } from '../types/auth';
+import { types, type LoveType as TestLoveType } from '../data/loveTest';
 
 type CardRegisterPageProps = {
   resultType: TestLoveType | null;
@@ -12,23 +14,20 @@ type CardRegisterPageProps = {
   onBackToTest: () => void;
 };
 
-const LOVE_TYPE_OPTIONS: { value: TestLoveType; label: string; color: string; image: string }[] = [
-  { value: 'satto', label: '사또', color: '#1a6b2a', image: '/characters/satto.png' },
-  { value: 'general', label: '장군', color: '#ab1729', image: '/characters/janggun.png' },
-  { value: 'yangban', label: '양반', color: '#1e50a2', image: '/characters/yangban.png' },
-  { value: 'dolsoe', label: '돌쇠', color: '#b87a1a', image: '/characters/dolsoe.png' },
-  { value: 'royal', label: '왕족', color: '#5c2d8a', image: '/characters/wangjok.png' },
-  { value: 'clown', label: '광대', color: '#1a2050', image: '/characters/gwangdae.png' },
+const LOVE_TYPE_OPTIONS: {
+  value: TestLoveType;
+  label: string;
+  color: string;
+  image: string;
+  description: string;
+}[] = [
+  { value: 'satto', label: '사또', color: '#1a6b2a', image: '/characters/satto.png', description: '내가 계획한 대로 따라와야 직성이 풀리는 리더 스타일' },
+  { value: 'general', label: '장군', color: '#ab1729', image: '/characters/janggun.png', description: '눈치 안 보고 돌진! 내 사랑은 내가 지킨다는 과감한 직진 스타일' },
+  { value: 'yangban', label: '양반', color: '#1e50a2', image: '/characters/yangban.png', description: '예의를 중시하고 밀당을 즐기며, 천천히 타오르는 스타일' },
+  { value: 'dolsoe', label: '돌쇠', color: '#b87a1a', image: '/characters/dolsoe.png', description: '무슨 일이든 다 해주고 싶은 조선 최고의 순정 사랑꾼' },
+  { value: 'royal', label: '왕족', color: '#5c2d8a', image: '/characters/wangjok.png', description: '사랑받는 게 자연스럽고, 품격 있게 마음을 전하는 스타일' },
+  { value: 'clown', label: '광대', color: '#1a2050', image: '/characters/gwangdae.png', description: '입담과 유머로 상대를 매일 웃게 만드는 자유로운 스타일' },
 ];
-
-const API_LOVE_TYPE_MAP: Record<TestLoveType, ApiLoveType> = {
-  yangban: 'YANGBAN',
-  general: 'JANGGUN',
-  satto: 'SATTO',
-  dolsoe: 'DOLSOE',
-  royal: 'WANGJOK',
-  clown: 'GWANGDAE',
-};
 
 const EMOJI_OPTIONS = [
   { value: '🐶', label: '강아지상' },
@@ -47,6 +46,31 @@ const inputStyle = {
 const getLoveTypeOption = (type: TestLoveType | '') =>
   LOVE_TYPE_OPTIONS.find((option) => option.value === type) ?? null;
 
+const BACKEND_LOVE_TYPE_MAP: Record<string, TestLoveType> = {
+  YANGBAN: 'yangban',
+  GENERAL: 'general',
+  JANGGUN: 'general',
+  SATTO: 'satto',
+  DOLSOE: 'dolsoe',
+  ROYAL: 'royal',
+  WANGJOK: 'royal',
+  CLOWN: 'clown',
+  GWANGDAE: 'clown',
+};
+
+const getLoveTypeCode = (type: TestLoveType) => type.toUpperCase();
+
+const normalizeLoveTypeCode = (code?: string | null): TestLoveType | null => {
+  if (!code) return null;
+
+  const lowerCode = code.toLowerCase();
+  if (types.includes(lowerCode as TestLoveType)) {
+    return lowerCode as TestLoveType;
+  }
+
+  return BACKEND_LOVE_TYPE_MAP[code.toUpperCase()] ?? null;
+};
+
 export default function CardRegisterPage({ resultType, onComplete, onBrowseCards, onGoHome, onBackToTest }: CardRegisterPageProps) {
   const [selectedLoveType, setSelectedLoveType] = useState<TestLoveType | ''>(() => resultType ?? '');
   const [isTypeListOpen, setIsTypeListOpen] = useState(() => !resultType);
@@ -61,6 +85,16 @@ export default function CardRegisterPage({ resultType, onComplete, onBrowseCards
   const [error, setError] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [showTicketPanel, setShowTicketPanel] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [authToken, setAuthToken] = useState(() => localStorage.getItem('token') ?? '');
+  const [myCard, setMyCard] = useState<AuthData | null>(null);
+  const [myCardError, setMyCardError] = useState('');
+  const [adminCode, setAdminCode] = useState('');
+  const [ticketAmount, setTicketAmount] = useState('');
+  const [isGrantingTicket, setIsGrantingTicket] = useState(false);
+  const [ticketMessage, setTicketMessage] = useState('');
+  const [ticketError, setTicketError] = useState('');
+  const [ticketGranted, setTicketGranted] = useState(false);
 
   const passwordMismatch = passwordConfirm.length > 0 && password !== passwordConfirm;
   const passwordMatches = passwordConfirm.length > 0 && password === passwordConfirm && password.length >= 6;
@@ -79,8 +113,45 @@ export default function CardRegisterPage({ resultType, onComplete, onBrowseCards
 
   const canSubmit = !validationError;
   const selectedOption = getLoveTypeOption(selectedLoveType);
+  const myCardLoveType = normalizeLoveTypeCode(myCard?.loveTypeCode) ?? (selectedLoveType || null);
+  const myCardOption = myCardLoveType ? getLoveTypeOption(myCardLoveType) : selectedOption;
+  const myCardLoveTypeName = myCard?.loveTypeName ?? myCardOption?.label ?? selectedOption?.label ?? '';
+  const myCardInstagramId = myCard?.instagramId ?? instagramId.trim();
+  const myCardIntroduction = myCard?.introduction ?? introduction.trim();
+  const myCardEmoji = myCard?.emoji ?? emoji;
+  const myTicketCount = myCard?.ticketCount ?? 0;
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  useEffect(() => {
+    if (!submitted) return;
+    if (!authToken) {
+      onGoHome();
+      return;
+    }
+
+    let isActive = true;
+
+    const loadMyCard = async () => {
+      try {
+        const data = await getCurrentUser(authToken);
+        if (!isActive) return;
+
+        setMyCard(data);
+        setMyCardError('');
+      } catch (err) {
+        if (!isActive) return;
+
+        setMyCardError(isApiError(err) ? err.message : '내 카드 정보를 불러오지 못했소.');
+      }
+    };
+
+    void loadMyCard();
+
+    return () => {
+      isActive = false;
+    };
+  }, [authToken, onGoHome, submitted]);
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (validationError) {
@@ -88,29 +159,79 @@ export default function CardRegisterPage({ resultType, onComplete, onBrowseCards
       return;
     }
 
+    setIsSubmitting(true);
+    setError('');
+
     const signupPayload: SignupRequest = {
       instagramId: instagramId.trim(),
       password,
       gender: gender as Gender,
-      loveType: API_LOVE_TYPE_MAP[selectedLoveType as TestLoveType],
-      mbti: null,
       introduction: introduction.trim() || null,
       emoji,
+      loveTypeCode: getLoveTypeCode(selectedLoveType as TestLoveType),
     };
 
-    console.info('signup payload ready:', signupPayload);
+    try {
+      const authData = await signup(signupPayload);
 
-    const mockAuthData: AuthData = {
-      userId: Date.now(),
-      instagramId: signupPayload.instagramId,
-    };
+      if (!authData.token) {
+        setError('인증 토큰을 받지 못했소.');
+        return;
+      }
 
-    saveSession(mockAuthData);
-    setSubmitted(true);
-    onComplete(mockAuthData);
+      localStorage.setItem('token', authData.token);
+      setAuthToken(authData.token);
+      saveSession(authData);
+      setMyCard(authData);
+      setSubmitted(true);
+      onComplete(authData);
+    } catch (err) {
+      setError(isApiError(err) ? err.message : '회원가입에 실패했소.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  if (submitted && selectedOption) {
+  const handleGrantTicket = async () => {
+    const trimmedCode = adminCode.trim();
+
+    if (!trimmedCode) {
+      setTicketError('관리자 코드를 입력하시오.');
+      setTicketMessage('');
+      return;
+    }
+
+    const parsedTicketAmount = Number(ticketAmount || 0);
+
+    if (parsedTicketAmount < 0) {
+      setTicketError('지급 개수를 다시 확인하시오.');
+      setTicketMessage('');
+      return;
+    }
+
+    setIsGrantingTicket(true);
+    setTicketError('');
+    setTicketMessage('');
+
+    try {
+      const result = await grantTicket(trimmedCode, parsedTicketAmount);
+      const nextUser = await getCurrentUser(authToken);
+
+      setMyCard({
+        ...nextUser,
+        ticketCount: nextUser.ticketCount ?? result.ticketCount ?? myCard?.ticketCount,
+      });
+      setTicketMessage('뽑기권을 받았소');
+      setTicketGranted(true);
+      setAdminCode('');
+    } catch {
+      setTicketError('코드를 다시 확인해보시오');
+    } finally {
+      setIsGrantingTicket(false);
+    }
+  };
+
+  if (submitted && myCardOption) {
     return (
       <section
         className="relative w-full flex-1 overflow-hidden py-10 px-4"
@@ -150,41 +271,53 @@ export default function CardRegisterPage({ resultType, onComplete, onBrowseCards
           <article
             className="mt-6 rounded-xl px-4 py-5 text-left card-shadow"
             style={{
-              background: `linear-gradient(180deg, ${selectedOption.color}16 0%, rgba(255,250,240,0.92) 100%)`,
-              border: `1.5px solid ${selectedOption.color}30`,
+              background: `linear-gradient(180deg, ${myCardOption.color}16 0%, rgba(255,250,240,0.92) 100%)`,
+              border: `1.5px solid ${myCardOption.color}30`,
             }}
           >
             <div className="flex items-center gap-4">
               <div
                 className="flex h-28 w-24 shrink-0 items-end justify-center overflow-hidden rounded-xl"
                 style={{
-                  background: `linear-gradient(180deg, ${selectedOption.color}18 0%, #fff7e6 100%)`,
-                  border: `1px solid ${selectedOption.color}30`,
+                  background: `linear-gradient(180deg, ${myCardOption.color}18 0%, #fff7e6 100%)`,
+                  border: `1px solid ${myCardOption.color}30`,
                 }}
               >
                 <img
-                  src={selectedOption.image}
-                  alt={`${selectedOption.label} 유형`}
+                  src={myCardOption.image}
+                  alt={`${myCardLoveTypeName} 유형`}
                   className="h-full w-full object-contain object-bottom p-2"
                 />
               </div>
               <div className="min-w-0">
                 <p className="text-xs font-black text-[#8b6b45]">연애 유형</p>
-                <h3 className="mt-1 font-serif-kr text-3xl font-black text-[#2e1c0e]">{selectedOption.label}</h3>
-                {emoji && (
+                <h3 className="mt-1 font-serif-kr text-3xl font-black text-[#2e1c0e]">{myCardLoveTypeName}</h3>
+                <p className="mt-2 text-xs font-bold leading-relaxed text-[#7a5530]">
+                  {myCardOption.description}
+                </p>
+                {myCardEmoji && (
                   <p className="mt-3 text-sm font-bold leading-relaxed text-[#5a3e25]">
-                    대표 이모지: {emoji}
+                    대표 이모지: {myCardEmoji}
                   </p>
                 )}
                 <p className="mt-1 text-sm font-bold leading-relaxed text-[#5a3e25]">
-                  한줄 소개: {introduction}
+                  한줄 소개: {myCardIntroduction}
                 </p>
               </div>
             </div>
             <div className="mt-4 rounded-lg bg-[#fff7e6]/80 px-3 py-2 text-sm font-bold text-[#4b301b]">
-              인스타그램 ID: {instagramId.trim()}
+              인스타그램 ID: {myCardInstagramId}
+            </div>
+            <div className="mt-2 rounded-lg bg-[#fff7e6]/80 px-3 py-2 text-sm font-bold text-[#4b301b]">
+              보유 뽑기권: {myTicketCount}장
             </div>
           </article>
+
+          {myCardError && (
+            <p className="mt-3 rounded-lg px-3 py-2 text-xs font-bold text-[#ab1729]" style={{ background: 'rgba(171,23,41,0.08)' }}>
+              {myCardError}
+            </p>
+          )}
 
           <div className="mt-6 space-y-3 font-serif-kr text-sm font-black leading-relaxed text-[#5a3e25]">
             <p>
@@ -201,13 +334,52 @@ export default function CardRegisterPage({ resultType, onComplete, onBrowseCards
 
           {showTicketPanel && (
             <div className="mt-5 rounded-xl border border-[#d4b87a] bg-[#fff7e6] px-4 py-4 text-left">
-              <p className="font-serif-kr text-sm font-black text-[#2e1c0e]">관리자 코드 입력</p>
-              <input
-                type="text"
-                placeholder="관리자 코드를 입력해주시오4"
-                className="mt-3 w-full rounded-lg px-3 py-2.5 text-sm text-[#2e1c0e] outline-none"
-                style={inputStyle}
-              />
+              <p className="font-serif-kr text-sm font-black text-[#2e1c0e]">관리자 코드를 입력하시오</p>
+              {!ticketGranted ? (
+                <div className="mt-3 grid gap-2 sm:grid-cols-[1fr_auto]">
+                  <input
+                    type="text"
+                    value={adminCode}
+                    onChange={(e) => {
+                      setAdminCode(e.target.value);
+                      setTicketError('');
+                    }}
+                    placeholder="관리자 코드"
+                    className="w-full rounded-lg px-3 py-2.5 text-sm text-[#2e1c0e] outline-none"
+                    style={inputStyle}
+                  />
+                  <input
+                    type="number"
+                    min={0}
+                    value={ticketAmount}
+                    onChange={(e) => {
+                      setTicketAmount(e.target.value);
+                      setTicketError('');
+                    }}
+                    placeholder="지급 개수"
+                    className="w-full rounded-lg px-3 py-2.5 text-sm text-[#2e1c0e] outline-none"
+                    style={inputStyle}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => void handleGrantTicket()}
+                    disabled={isGrantingTicket}
+                    className="rounded-lg bg-[#ab1729] px-4 py-2.5 font-serif-kr text-sm font-bold text-[#fff7e6] disabled:opacity-60 sm:col-span-2"
+                  >
+                    {isGrantingTicket ? '확인 중' : '확인'}
+                  </button>
+                </div>
+              ) : (
+                <p className="mt-3 rounded-lg bg-white/70 px-3 py-2 text-sm font-bold text-[#1a6b2a]">
+                  지급 완료
+                </p>
+              )}
+              {ticketMessage && (
+                <p className="mt-3 text-sm font-bold text-[#1a6b2a]">{ticketMessage}</p>
+              )}
+              {ticketError && (
+                <p className="mt-3 text-sm font-bold text-[#ab1729]">{ticketError}</p>
+              )}
             </div>
           )}
 
@@ -563,16 +735,16 @@ export default function CardRegisterPage({ resultType, onComplete, onBrowseCards
 
           <button
             type="submit"
-            disabled={!canSubmit}
+            disabled={!canSubmit || isSubmitting}
             className="mt-1 w-full rounded-xl py-3 font-serif-kr text-sm font-bold text-[#f5e8d0] transition enabled:hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
             style={{
-              background: canSubmit
+              background: canSubmit && !isSubmitting
                 ? 'linear-gradient(160deg, #c41e32 0%, #8b1220 100%)'
                 : 'linear-gradient(160deg, #9b8a72 0%, #6d5d4b 100%)',
-              boxShadow: canSubmit ? '0 4px 16px rgba(140,18,32,0.4)' : 'none',
+              boxShadow: canSubmit && !isSubmitting ? '0 4px 16px rgba(140,18,32,0.4)' : 'none',
             }}
           >
-            카드 만들기
+            {isSubmitting ? '카드를 만드는 중이오...' : '카드 만들기'}
           </button>
 
           {!resultType && (

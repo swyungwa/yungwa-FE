@@ -6,14 +6,17 @@ export type LoveType =
   | 'SATTO'
   | 'DOLSOE'
   | 'WANGJOK'
-  | 'GWANGDAE';
+  | 'GWANGDAE'
+  | 'GENERAL'
+  | 'ROYAL'
+  | 'CLOWN';
 
 export type SignupRequest = {
   instagramId: string;
   password: string;
   gender: Gender;
   mbti?: string | null;
-  loveType?: LoveType | null;
+  loveTypeCode?: string | null;
   introduction?: string | null;
   emoji?: string | null;
 };
@@ -26,4 +29,12 @@ export type LoginRequest = {
 export type AuthData = {
   userId: number;
   instagramId: string;
+  gender?: Gender;
+  mbti?: string | null;
+  introduction?: string | null;
+  emoji?: string | null;
+  loveTypeCode?: string | null;
+  loveTypeName?: string | null;
+  ticketCount?: number;
+  token?: string;
 };

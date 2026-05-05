@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { login, saveSession } from '../services/auth';
-import { isApiError } from '../lib/api';
+import { getCurrentUser, login, saveSession } from '../services/auth';
 import type { AuthData } from '../types/auth';
 
 type Props = {
@@ -29,11 +28,21 @@ export default function LoginModal({ onClose, onSuccess }: Props) {
     setLoading(true);
     setError('');
     try {
-      const data = await login({ instagramId: instagramId.trim(), password });
+      const loginData = await login({ instagramId: instagramId.trim(), password });
+
+      if (!loginData.token) {
+        setError('아이디 또는 비밀번호를 다시 확인하시오');
+        return;
+      }
+
+      localStorage.setItem('token', loginData.token);
+      saveSession(loginData);
+
+      const data = await getCurrentUser(loginData.token);
       saveSession(data);
       onSuccess(data);
-    } catch (err) {
-      setError(isApiError(err) ? err.message : '로그인에 실패했습니다.');
+    } catch {
+      setError('아이디 또는 비밀번호를 다시 확인하시오');
     } finally {
       setLoading(false);
     }
@@ -73,8 +82,8 @@ export default function LoginModal({ onClose, onSuccess }: Props) {
             style={{ background: 'linear-gradient(135deg, #8b1a1a, #6b1010)', boxShadow: '0 2px 8px rgba(0,0,0,0.3)' }}>
             龍
           </div>
-          <h2 className="font-serif-kr font-black text-[#2e1c0e] text-xl">로그인</h2>
-          <p className="text-[#8b6b45] text-xs mt-1">인연을 확인하러 오셨군요</p>
+          <h2 className="font-serif-kr font-black text-[#2e1c0e] text-xl">내 카드 불러오기</h2>
+          <p className="text-[#8b6b45] text-xs mt-1">만들어둔 연분첩을 확인하시오</p>
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
@@ -134,7 +143,7 @@ export default function LoginModal({ onClose, onSuccess }: Props) {
               boxShadow: '0 4px 16px rgba(140,18,32,0.4)',
             }}
           >
-            {loading ? '확인 중…' : '로그인'}
+            {loading ? '확인 중…' : '내 카드 불러오기'}
           </button>
         </form>
 
