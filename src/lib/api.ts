@@ -1,6 +1,6 @@
 import type { ApiResponse, ApiErrorResponse } from '../types/api';
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL as string;
+const BASE_URL = (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? '';
 
 export type ApiError = Error & { errorCode: string };
 
