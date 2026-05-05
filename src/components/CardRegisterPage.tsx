@@ -109,6 +109,7 @@ export default function CardRegisterPage({ resultType, onComplete, onBrowseCards
   const passwordMismatch = passwordConfirm.length > 0 && password !== passwordConfirm;
   const passwordMatches = passwordConfirm.length > 0 && password === passwordConfirm && password.length >= 6;
   const normalizedMbti = mbti.trim().toUpperCase();
+  const showMbtiError = normalizedMbti.length === 4 && !VALID_MBTI.has(normalizedMbti);
 
   const validationError = useMemo(() => {
     if (!selectedLoveType) return '유형을 선택해주세요.';
@@ -745,6 +746,11 @@ export default function CardRegisterPage({ resultType, onComplete, onBrowseCards
               style={inputStyle}
               required
             />
+            {showMbtiError ? (
+              <p className="mt-1 text-[11px] font-bold text-[#ab1729]">올바른 MBTI 유형을 입력해주시오</p>
+            ) : (
+              <p className="mt-1 text-[11px] font-bold text-[#8b6b45]">네 글자 MBTI를 입력해주시오</p>
+            )}
           </div>
 
           <div>
