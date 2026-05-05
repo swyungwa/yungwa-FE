@@ -137,7 +137,7 @@ export default function HeroSection({
               boxShadow: '0 6px 20px rgba(140,18,32,0.5), 0 1px 0 rgba(255,255,255,0.15) inset',
               border: '1px solid rgba(255,255,255,0.15)',
             }}>
-            테스트 시작하기
+            연애유형 테스트 시작하기
           </button>
 
           <p className="pt-5 font-serif-kr text-xs font-bold text-[#7a5428]">

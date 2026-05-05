@@ -426,7 +426,7 @@ export default function CardBrowsePage({
                 disabled={unlockState.isLoading}
                 className="w-full rounded-lg bg-[#fffaf0] px-3 py-2 text-center font-serif-kr text-sm font-black text-[#4b301b] transition hover:bg-[#fff0d0] disabled:opacity-60"
               >
-                {unlockState.isLoading ? '확인하는 중이오...' : '인스타 보기'}
+                {unlockState.isLoading ? '확인하는 중이오...' : '인스타 아이디 보기'}
               </button>
             ) : (
               <p className="rounded-lg bg-[#fffaf0] px-3 py-2 text-center text-sm font-black text-[#2e1c0e]">
