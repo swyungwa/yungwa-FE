@@ -5,10 +5,9 @@ import TypePreviewSection from './components/TypePreviewSection';
 import LoveTypeSection from './components/LoveTypeSection';
 import CardRegisterPage from './components/CardRegisterPage';
 import CardBrowsePage from './components/CardBrowsePage';
-import Header from './components/Header';
 import LoginModal from './components/LoginModal';
 import Footer from './components/Footer';
-import { getCurrentUser } from './services/auth';
+import { clearSession, getCurrentUser } from './services/auth';
 import { types } from './data/loveTest';
 import type { AuthData } from './types/auth';
 import type { LoveType } from './data/loveTest';
@@ -16,6 +15,8 @@ import type { LoveType } from './data/loveTest';
 type PageState = 'home' | 'test' | 'register' | 'cards';
 
 const LOVE_TYPE_STORAGE_KEY = 'testResultLoveType';
+const LOVE_TEST_RESULT_STORAGE_KEY = 'loveTestResult';
+const KNOWN_PATHS = new Set(['/', '/test', '/register', '/cards']);
 
 const getPageFromPath = (): PageState => {
   if (window.location.pathname === '/test') return 'test';
@@ -24,27 +25,39 @@ const getPageFromPath = (): PageState => {
   return 'home';
 };
 
+const normalizeInitialPath = () => {
+  if (KNOWN_PATHS.has(window.location.pathname)) return;
+  window.history.replaceState(null, '', '/');
+};
+
 const getStoredLoveType = (): LoveType | null => {
   const value = sessionStorage.getItem(LOVE_TYPE_STORAGE_KEY);
   return types.includes(value as LoveType) ? (value as LoveType) : null;
 };
 
+const clearLoveTestState = () => {
+  localStorage.removeItem(LOVE_TEST_RESULT_STORAGE_KEY);
+  sessionStorage.removeItem(LOVE_TYPE_STORAGE_KEY);
+};
+
 export default function App() {
   const [currentUser, setCurrentUser] = useState<AuthData | null>(null);
-  const [page, setPage] = useState<PageState>('home');
+  const [page, setPage] = useState<PageState>(() => {
+    normalizeInitialPath();
+    return getPageFromPath();
+  });
   const [testResultType] = useState<LoveType | null>(getStoredLoveType);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
 
   useEffect(() => {
-    if (window.location.pathname !== '/') {
-      window.history.replaceState(null, '', '/');
-    }
-
     const token = localStorage.getItem('token');
     if (token) {
       getCurrentUser(token)
         .then(setCurrentUser)
-        .catch(() => setCurrentUser(null));
+        .catch(() => {
+          clearSession();
+          setCurrentUser(null);
+        });
     }
 
     const handlePopState = () => {
@@ -66,6 +79,11 @@ export default function App() {
     moveToPage('cards');
   };
 
+  const handleLogout = () => {
+    clearSession();
+    setCurrentUser(null);
+  };
+
   const moveToPage = (nextPage: PageState) => {
     const nextPath =
       nextPage === 'test'
@@ -84,6 +102,8 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const hasStoredCard = Boolean(currentUser);
+
   return (
     <div className="relative min-h-screen w-full overflow-x-hidden">
       {/* 좌우 산수화 장식 — lg 이상에서만 표시 */}
@@ -100,19 +120,19 @@ export default function App() {
 
       {/* 메인 콘텐츠 컨테이너 */}
       <div className="relative z-10 w-full max-w-[680px] mx-auto flex flex-col min-h-screen">
-        <Header
-          currentUser={currentUser}
-          onLoginClick={() => setIsLoginOpen(true)}
-          onLogout={() => setCurrentUser(null)}
-          onHomeClick={() => moveToPage('home')}
-        />
         <main className="flex-1 flex flex-col">
           {page === 'home' ? (
             <>
               <HeroSection
-                onTestClick={() => moveToPage('test')}
+                onTestClick={() => {
+                  clearLoveTestState();
+                  moveToPage('test');
+                }}
                 onCreateClick={() => moveToPage('register')}
                 onBrowseClick={() => moveToPage('cards')}
+                currentUser={currentUser}
+                hasCard={hasStoredCard}
+                onLogout={handleLogout}
               />
               <TypePreviewSection />
             </>
@@ -130,10 +150,11 @@ export default function App() {
             />
           ) : (
             <CardBrowsePage
+              currentUser={currentUser}
               onBackHome={() => moveToPage('home')}
               onCreateCard={() => moveToPage('register')}
               onLoginClick={() => setIsLoginOpen(true)}
-              onStartTest={() => moveToPage('test')}
+              onLogout={handleLogout}
             />
           )}
         </main>

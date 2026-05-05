@@ -1,19 +1,44 @@
 import { motion } from 'framer-motion';
 import { PlumBranch, HanokRoofDecor, CloudWaveDivider, CloudCluster, GoldCornerFrame, CraneDecor } from '../decorations';
+import type { AuthData } from '../types/auth';
 
 type Props = {
   onTestClick: () => void;
   onCreateClick: () => void;
   onBrowseClick: () => void;
+  currentUser: AuthData | null;
+  hasCard?: boolean;
+  onLogout: () => void;
 };
 
-export default function HeroSection({ onTestClick, onCreateClick, onBrowseClick }: Props) {
+export default function HeroSection({
+  onTestClick,
+  onCreateClick,
+  onBrowseClick,
+  currentUser,
+  hasCard = false,
+  onLogout,
+}: Props) {
   return (
     <section className="relative w-full overflow-hidden"
       style={{
         background: 'linear-gradient(175deg, #dfc88a 0%, #e8d4a0 20%, #f0e2c2 55%, #ece0b8 100%)',
         minHeight: '420px',
       }}>
+
+      {currentUser && (
+        <div className="absolute right-4 top-4 z-30 max-w-[190px] truncate text-right text-xs font-bold text-[#4b301b]/65">
+          <span>@{currentUser.instagramId}</span>
+          <span className="mx-1.5 opacity-60">·</span>
+          <button
+            type="button"
+            onClick={onLogout}
+            className="align-baseline text-xs font-bold text-[#4b301b]/65 underline-offset-2 transition hover:text-[#2e1c0e]/80 hover:underline"
+          >
+            로그아웃
+          </button>
+        </div>
+      )}
 
       {/* ── 배경 격자 패턴 ── */}
       <div className="absolute inset-0 pointer-events-none"
@@ -116,7 +141,7 @@ export default function HeroSection({ onTestClick, onCreateClick, onBrowseClick 
           </button>
 
           <p className="pt-5 font-serif-kr text-xs font-bold text-[#7a5428]">
-            카드 만들기 전 테스트를 먼저 진행해 주시오
+            {hasCard ? '완성된 연분첩은 언제든 다시 볼 수 있소' : '카드 만들기 전 테스트를 먼저 진행해 주시오'}
           </p>
 
           <div className="grid grid-cols-2 gap-3">
@@ -130,7 +155,7 @@ export default function HeroSection({ onTestClick, onCreateClick, onBrowseClick 
                 border: '1px solid rgba(255,255,255,0.13)',
               }}
             >
-              카드 만들기
+              {hasCard ? '내 카드 보기' : '카드 만들기'}
             </button>
             <button
               type="button"
@@ -142,7 +167,7 @@ export default function HeroSection({ onTestClick, onCreateClick, onBrowseClick 
                 border: '1px solid rgba(255,255,255,0.12)',
               }}
             >
-              카드 뽑기
+              카드 둘러보기
             </button>
           </div>
         </motion.div>

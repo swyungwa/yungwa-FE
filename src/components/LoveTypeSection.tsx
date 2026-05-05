@@ -15,6 +15,7 @@ import {
 } from '../data/loveTest';
 
 const LOVE_TEST_RESULT_STORAGE_KEY = 'loveTestResult';
+const LOVE_TYPE_STORAGE_KEY = 'testResultLoveType';
 
 type StoredLoveTestResult = {
   type: LoveType;
@@ -95,6 +96,7 @@ const saveLoveTestResult = (type: LoveType, scores: ScoreMap) => {
       scores,
     }),
   );
+  sessionStorage.setItem(LOVE_TYPE_STORAGE_KEY, type);
 };
 
 const LOVE_TYPE_PROFILES: Record<LoveType, {
@@ -207,6 +209,7 @@ export default function LoveTypeSection({ onGoHome }: LoveTypeSectionProps) {
 
   const handleRestart = () => {
     localStorage.removeItem(LOVE_TEST_RESULT_STORAGE_KEY);
+    sessionStorage.removeItem(LOVE_TYPE_STORAGE_KEY);
     setCurrentIndex(0);
     setScores(createInitialScores());
     setResultType(null);

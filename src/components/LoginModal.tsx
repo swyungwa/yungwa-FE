@@ -78,12 +78,7 @@ export default function LoginModal({ onClose, onSuccess }: Props) {
 
         {/* 헤더 */}
         <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center w-10 h-10 rounded font-serif-kr font-black text-[#f5e8d0] text-sm mb-3"
-            style={{ background: 'linear-gradient(135deg, #8b1a1a, #6b1010)', boxShadow: '0 2px 8px rgba(0,0,0,0.3)' }}>
-            龍
-          </div>
           <h2 className="font-serif-kr font-black text-[#2e1c0e] text-xl">내 카드 불러오기</h2>
-          <p className="text-[#8b6b45] text-xs mt-1">만들어둔 연분첩을 확인하시오</p>
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
@@ -95,7 +90,6 @@ export default function LoginModal({ onClose, onSuccess }: Props) {
               type="text"
               value={instagramId}
               onChange={e => setInstagramId(e.target.value)}
-              placeholder="instagram_id"
               className="w-full px-3 py-2.5 rounded-lg text-sm text-[#2e1c0e] outline-none transition-all"
               style={{
                 background: 'rgba(255,255,255,0.7)',
@@ -115,7 +109,6 @@ export default function LoginModal({ onClose, onSuccess }: Props) {
               type="password"
               value={password}
               onChange={e => setPassword(e.target.value)}
-              placeholder="최소 4자"
               className="w-full px-3 py-2.5 rounded-lg text-sm text-[#2e1c0e] outline-none transition-all"
               style={{
                 background: 'rgba(255,255,255,0.7)',
@@ -155,7 +148,7 @@ export default function LoginModal({ onClose, onSuccess }: Props) {
         </div>
 
         <p className="text-center text-xs text-[#8b6b45]">
-          아직 카드가 없으신가요? 테스트를 먼저 진행해주세요.
+          아직 연분첩이 없으시다면, 먼저 카드를 만들어보시오.
         </p>
       </div>
     </div>
