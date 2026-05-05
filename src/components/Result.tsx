@@ -10,10 +10,9 @@ type CharacterProfile = {
 type ResultProps = {
   profile: CharacterProfile;
   onRestart: () => void;
-  onRegister: () => void;
 };
 
-export default function Result({ profile, onRestart, onRegister }: ResultProps) {
+export default function Result({ profile, onRestart }: ResultProps) {
   return (
     <div className="rounded-xl bg-[#fffaf0] ink-border card-shadow-lg overflow-hidden text-center">
       <div
@@ -37,20 +36,13 @@ export default function Result({ profile, onRestart, onRegister }: ResultProps) 
           {profile.description}
         </p>
 
-        <div className="mt-7 grid gap-3 sm:grid-cols-2">
+        <div className="mt-7">
           <button
             type="button"
             onClick={onRestart}
-            className="rounded-lg border border-[#d4b87a] bg-[#fff7e6] px-5 py-3 text-sm font-black text-[#4b301b] transition hover:-translate-y-0.5 hover:bg-[#fff0d0] focus:outline-none focus:ring-2 focus:ring-[#2e1c0e]/20"
+            className="w-full rounded-lg border border-[#d4b87a] bg-[#fff7e6] px-5 py-3 text-sm font-black text-[#4b301b] transition hover:-translate-y-0.5 hover:bg-[#fff0d0] focus:outline-none focus:ring-2 focus:ring-[#2e1c0e]/20"
           >
             다시 테스트하기
-          </button>
-          <button
-            type="button"
-            onClick={onRegister}
-            className="rounded-lg bg-[#2e1c0e] px-5 py-3 text-sm font-black text-[#f8e8b4] transition hover:-translate-y-0.5 hover:bg-[#4a2d16] focus:outline-none focus:ring-2 focus:ring-[#2e1c0e]/30"
-          >
-            카드 등록하기
           </button>
         </div>
       </div>
