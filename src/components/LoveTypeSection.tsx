@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Question from './Question';
 import Result from './Result';
+import { CloudCluster, CraneDecor, GoldCornerFrame, HanokRoofDecor, PlumBranch } from '../decorations';
 import {
   calculateNextScores,
   createInitialScores,
@@ -114,7 +115,36 @@ export default function LoveTypeSection() {
   };
 
   return (
-    <section className="w-full py-12 hanji-section">
+    <section
+      className="relative w-full overflow-hidden py-12"
+      style={{
+        background: 'linear-gradient(175deg, #dfc88a 0%, #e8d4a0 20%, #f0e2c2 55%, #ece0b8 100%)',
+      }}
+    >
+      <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: 'repeating-linear-gradient(0deg, rgba(160,110,40,0.04) 0, rgba(160,110,40,0.04) 1px, transparent 1px, transparent 28px), repeating-linear-gradient(90deg, rgba(160,110,40,0.04) 0, rgba(160,110,40,0.04) 1px, transparent 1px, transparent 28px)',
+          }}
+        />
+        <div className="absolute -top-12 -left-7 origin-top-left scale-[0.62] opacity-30 sm:-top-4 sm:-left-4 sm:scale-100 sm:opacity-42">
+          <PlumBranch />
+        </div>
+        <div className="absolute top-0 right-0 opacity-35">
+          <HanokRoofDecor />
+        </div>
+        <CraneDecor className="absolute top-24 -right-10 scale-[0.72] opacity-[0.13] sm:top-20 sm:right-2 sm:scale-110 sm:opacity-[0.16]" />
+        <div className="absolute top-20 right-0 scale-75 opacity-25 sm:top-14 sm:right-8 sm:scale-100 sm:opacity-45">
+          <CloudCluster />
+        </div>
+        <div className="absolute top-32 left-28 scale-75 opacity-24">
+          <CloudCluster />
+        </div>
+        <GoldCornerFrame className="opacity-30" />
+      </div>
+
+      <div className="relative z-10">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -136,6 +166,22 @@ export default function LoveTypeSection() {
         <p className="text-[#8b6b45] text-sm font-sans">열 문답으로 알아보는 나의 조선 연애 캐릭터</p>
       </motion.div>
 
+      {!resultType && (
+        <div className="mx-4 mb-4 rounded-xl px-4 py-3 ink-border card-shadow"
+          style={{ background: 'rgba(255,247,230,0.7)' }}>
+          <div className="mb-2 flex items-center justify-between text-xs font-black text-[#7c5a2c]">
+            <span>진행률</span>
+            <span>{currentIndex + 1} / {questions.length}</span>
+          </div>
+          <div className="h-2 overflow-hidden rounded-full bg-[#d8bd78]/70">
+            <div
+              className="h-full rounded-full bg-[#ab1729] transition-all duration-300"
+              style={{ width: `${progressPercent}%` }}
+            />
+          </div>
+        </div>
+      )}
+
       <div className="relative mx-4 rounded-xl overflow-hidden"
         style={{
           background: 'linear-gradient(180deg, #d4b87a 0%, #c9a84c 2%, #e8d498 4%, #f5edd8 6%, #f5edd8 94%, #e8d498 96%, #c9a84c 98%, #d4b87a 100%)',
@@ -144,21 +190,6 @@ export default function LoveTypeSection() {
         }}>
         <div className="relative lattice-bg rounded-lg px-4 py-5 sm:px-5"
           style={{ background: 'rgba(245,237,216,0.8)' }}>
-          {!resultType && (
-            <div className="mb-5">
-              <div className="mb-2 flex items-center justify-between text-xs font-black text-[#7c5a2c]">
-                <span>진행률</span>
-                <span>{currentIndex + 1} / {questions.length}</span>
-              </div>
-              <div className="h-2 overflow-hidden rounded-full bg-[#d8bd78]/70">
-                <div
-                  className="h-full rounded-full bg-[#ab1729] transition-all duration-300"
-                  style={{ width: `${progressPercent}%` }}
-                />
-              </div>
-            </div>
-          )}
-
           {resultType && resultProfile ? (
             <Result
               profile={resultProfile}
@@ -167,14 +198,13 @@ export default function LoveTypeSection() {
           ) : (
             <Question
               question={currentQuestion}
-              currentIndex={currentIndex}
-              totalCount={questions.length}
               onSelect={handleSelect}
             />
           )}
         </div>
       </div>
 
+      </div>
     </section>
   );
 }

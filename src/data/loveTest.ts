@@ -27,82 +27,82 @@ export const loveTypeLabels: Record<LoveType, string> = {
 export const questions: Question[] = [
   {
     id: 1,
-    question: '장터에서 마음에 드는 이를 발견하였다면?',
+    question: '북적이는 장터에서 처음 본, 마음에 드는 사람과 눈이 마주쳤다면?',
     answers: [
-      { text: '"부끄럽구려..." 슬쩍 바라보기만 한다', types: ['yangban', 'satto'] },
-      { text: '"거기 잠깐 멈추시오!" 곧장 다가간다', types: ['general', 'clown'] },
+      { text: '"부끄럽구려..." 부채로 얼굴을 가리고 슬쩍 바라본다', types: ['yangban', 'satto'] },
+      { text: '"거기 잠깐 멈추시오!" 사람들 사이를 헤치고 다가간다', types: ['general', 'clown'] },
     ],
   },
   {
     id: 2,
-    question: '"달이 참 곱소이다"라는 편지를 받았다면?',
+    question: '연인이 밤늦게 "달이 참 곱소이다"라는 편지를 보냈다면?',
     answers: [
-      { text: '"그대 눈이 더 빛나오..." 감성 답장', types: ['royal', 'yangban'] },
-      { text: '"달 떴으면 잘 시간이오" 현실 답장', types: ['satto', 'general'] },
+      { text: '"그대 눈빛이 달보다 더 빛나오..." 정성껏 답장을 쓴다', types: ['royal', 'yangban'] },
+      { text: '"달 떴으면 이제 잘 시간이오" 짧고 현실적으로 답한다', types: ['satto', 'general'] },
     ],
   },
   {
     id: 3,
-    question: '그 사람이 크게 혼나 속상해한다면?',
+    question: '마음에 둔 사람이 관아 앞에서 크게 혼나 울먹이고 있다면?',
     answers: [
-      { text: '"오죽했겠소..." 곁에서 다독인다', types: ['dolsoe', 'royal'] },
-      { text: '"어찌하여 그리 되었소?" 이유를 묻는다', types: ['satto', 'clown'] },
+      { text: '"오죽했겠소..." 말없이 곁에 앉아 다독인다', types: ['dolsoe', 'royal'] },
+      { text: '"어찌하여 그리 되었소?" 자초지종을 차분히 묻는다', types: ['satto', 'clown'] },
     ],
   },
   {
     id: 4,
-    question: '말다툼이 벌어졌다면?',
+    question: '연인과 주막에서 작은 오해로 말다툼이 벌어졌다면?',
     answers: [
-      { text: '"잠시 물러나 생각해 봅시다"', types: ['yangban', 'dolsoe'] },
-      { text: '"지금 당장 결판을 냅시다!"', types: ['general', 'satto'] },
+      { text: '"잠시 바람 좀 쐬고 다시 이야기합시다" 한 걸음 물러난다', types: ['yangban', 'dolsoe'] },
+      { text: '"지금 당장 결판을 냅시다!" 그 자리에서 끝을 보려 한다', types: ['general', 'satto'] },
     ],
   },
   {
     id: 5,
-    question: '"모든 걸 버리고 떠날까요?"라 한다면?',
+    question: '연인이 "이 마을을 떠나 둘이 새로 시작할까요?"라고 한다면?',
     answers: [
-      { text: '"어찌 먹고 살 것이오?" 현실부터 따진다', types: ['satto', 'yangban'] },
-      { text: '"짐 싸시오. 내가 책임지겠소"', types: ['general', 'royal'] },
+      { text: '"어찌 먹고 살 것이오?" 집, 돈, 길부터 따져본다', types: ['satto', 'yangban'] },
+      { text: '"짐 싸시오. 내가 책임지겠소" 망설임 없이 함께 떠난다', types: ['general', 'royal'] },
     ],
   },
   {
     id: 6,
-    question: '연인이 다른 이와 웃고 있다면?',
+    question: '잔칫날, 연인이 낯선 이와 웃으며 이야기를 나누고 있다면?',
     answers: [
-      { text: '겉으로는 웃되 속으로 거리를 둔다', types: ['yangban', 'satto'] },
-      { text: '"이분은 뉘시오?" 자연스럽게 끼어든다', types: ['clown', 'general'] },
+      { text: '겉으로는 웃지만 속으로는 조용히 거리를 둔다', types: ['yangban', 'satto'] },
+      { text: '"이분은 뉘시오?" 자연스럽게 끼어들어 분위기를 살핀다', types: ['clown', 'general'] },
     ],
   },
   {
     id: 7,
-    question: '그 사람이 병상에 누워 있다면?',
+    question: '새벽녘, 연인이 열이 올라 병상에 누워 있다면?',
     answers: [
-      { text: '죽을 쑤고 밤새 곁을 지킨다', types: ['dolsoe', 'royal'] },
-      { text: '"이겨내시오. 내가 지켜보고 있소"', types: ['general', 'dolsoe'] },
+      { text: '죽을 쑤고 물수건을 갈아주며 밤새 곁을 지킨다', types: ['dolsoe', 'royal'] },
+      { text: '"이겨내시오. 내가 여기 있소" 곁에서 씩씩하게 응원한다', types: ['clown', 'general'] },
     ],
   },
   {
     id: 8,
-    question: '데이트 중 갑자기 비가 내린다면?',
+    question: '나루터 데이트 중 갑자기 소나기가 쏟아진다면?',
     answers: [
-      { text: '"이 또한 낭만 아니겠소?" 함께 웃는다', types: ['clown', 'royal'] },
-      { text: '말없이 우산을 씌워준다', types: ['yangban', 'royal'] },
+      { text: '"이 또한 낭만 아니겠소?" 비를 맞으며 함께 웃는다', types: ['clown', 'royal'] },
+      { text: '아무 말 없이 우산을 기울여 상대 쪽으로 씌워준다', types: ['dolsoe', 'yangban'] },
     ],
   },
   {
     id: 9,
-    question: '고백을 해야 하는 순간이라면?',
+    question: '꽃등 축제 마지막 밤, 고백해야 할 순간이 왔다면?',
     answers: [
-      { text: '"소인은 그대를 오래도록 연모하였소..."', types: ['yangban', 'dolsoe'] },
-      { text: '"내 사람이 되어주시오!" 단번에 직진', types: ['general', 'royal'] },
+      { text: '"소인은 그대를 오래도록 연모하였소..." 조심스레 마음을 전한다', types: ['yangban', 'dolsoe'] },
+      { text: '"내 사람이 되어주시오!" 망설임 없이 단번에 고백한다', types: ['general', 'royal'] },
     ],
   },
   {
     id: 10,
-    question: '연인이 삐쳐 마음을 닫았다면?',
+    question: '약속에 늦어 연인이 삐쳐 방문을 닫아버렸다면?',
     answers: [
-      { text: '"내가 부족하였소..." 먼저 다가간다', types: ['dolsoe', 'clown'] },
-      { text: '"무엇이 문제인지 말해보시오" 차분히 풀려 한다', types: ['satto', 'clown'] },
+      { text: '"내가 부족하였소..." 문밖에서 먼저 사과한다', types: ['dolsoe', 'clown'] },
+      { text: '"무엇이 서운했는지 말해보시오" 차분히 풀어보려 한다', types: ['satto', 'royal'] },
     ],
   },
 ];
@@ -116,15 +116,28 @@ export const createInitialScores = (): ScoreMap =>
     {} as ScoreMap,
   );
 
+// 돌쇠/광대는 6번 등장으로 나머지(7번)보다 적어 최대 점수가 낮아지는 문제를 보정:
+// 돌쇠/광대 +7점, 나머지 +6점 → 모든 유형 최대 42점으로 동일
+const TYPE_WEIGHTS: Record<LoveType, number> = {
+  satto: 6,
+  general: 6,
+  yangban: 6,
+  dolsoe: 7,
+  royal: 6,
+  clown: 7,
+};
+
 export const calculateNextScores = (scores: ScoreMap, answer: Answer): ScoreMap => {
   const nextScores = { ...scores };
 
   answer.types.forEach((type) => {
-    nextScores[type] += 1;
+    nextScores[type] += TYPE_WEIGHTS[type];
   });
 
   return nextScores;
 };
+
+const balancedTieBreakOrder: LoveType[] = ['dolsoe', 'yangban', 'satto', 'general', 'royal', 'clown'];
 
 export const getTopType = (scores: ScoreMap, lastSelectedTypes: LoveType[] = []): LoveType => {
   const highestScore = Math.max(...types.map((type) => scores[type]));
@@ -135,6 +148,7 @@ export const getTopType = (scores: ScoreMap, lastSelectedTypes: LoveType[] = [])
   }
 
   const lastSelectedWinner = lastSelectedTypes.find((type) => tiedTypes.includes(type));
+  const balancedWinner = balancedTieBreakOrder.find((type) => tiedTypes.includes(type));
 
-  return lastSelectedWinner ?? tiedTypes[Math.floor(Math.random() * tiedTypes.length)];
+  return balancedWinner ?? lastSelectedWinner ?? tiedTypes[0];
 };
