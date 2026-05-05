@@ -9,9 +9,19 @@ export default function Question({ question, onSelect }: QuestionProps) {
   return (
     <div className="rounded-xl bg-[#fffaf0] ink-border card-shadow-lg overflow-hidden">
       <div className="px-5 py-7 sm:px-6">
-        <h3 className="font-serif-kr text-2xl font-black leading-snug text-[#2e1c0e]">
+        <h3 className="font-serif-kr text-lg font-black leading-snug text-[#2e1c0e]">
           {question.question}
         </h3>
+
+        {question.imageUrl && (
+          <div className="mt-6 overflow-hidden rounded-lg border-2 border-[#d4b87a]/30">
+            <img
+              src={question.imageUrl}
+              alt={`질문 ${question.id} 이미지`}
+              className="h-auto w-full object-cover sm:max-h-72"
+            />
+          </div>
+        )}
 
         <div className="mt-7 grid gap-3">
           {question.answers.map((answer) => (
