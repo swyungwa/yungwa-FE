@@ -38,6 +38,13 @@ const EMOJI_OPTIONS = [
   { value: '🐻', label: '곰상' },
 ];
 
+const VALID_MBTI = new Set([
+  'INTJ', 'INTP', 'ENTJ', 'ENTP',
+  'INFJ', 'INFP', 'ENFJ', 'ENFP',
+  'ISTJ', 'ISFJ', 'ESTJ', 'ESFJ',
+  'ISTP', 'ISFP', 'ESTP', 'ESFP',
+]);
+
 const inputStyle = {
   background: 'rgba(255,255,255,0.74)',
   border: '1.5px solid rgba(160,110,40,0.3)',
@@ -101,6 +108,7 @@ export default function CardRegisterPage({ resultType, onComplete, onBrowseCards
 
   const passwordMismatch = passwordConfirm.length > 0 && password !== passwordConfirm;
   const passwordMatches = passwordConfirm.length > 0 && password === passwordConfirm && password.length >= 6;
+  const normalizedMbti = mbti.trim().toUpperCase();
 
   const validationError = useMemo(() => {
     if (!selectedLoveType) return '유형을 선택해주세요.';
@@ -108,12 +116,12 @@ export default function CardRegisterPage({ resultType, onComplete, onBrowseCards
     if (password.length < 6) return '비밀번호는 6자 이상입니다.';
     if (password !== passwordConfirm) return '비밀번호가 일치하지 않습니다.';
     if (!gender) return '성별을 선택해주세요.';
-    if (mbti.trim().length !== 4) return 'MBTI를 입력해주세요.';
+    if (!VALID_MBTI.has(normalizedMbti)) return '올바른 MBTI를 입력해주세요.';
     if (!emoji) return '대표 이모지를 선택해주세요.';
     if (!introduction.trim()) return '한줄 소개를 입력해주세요.';
     if (!privacyAgreed) return '개인정보 수집 및 이용에 동의해주세요.';
     return null;
-  }, [emoji, gender, instagramId, introduction, mbti, password, passwordConfirm, privacyAgreed, selectedLoveType]);
+  }, [emoji, gender, instagramId, introduction, normalizedMbti, password, passwordConfirm, privacyAgreed, selectedLoveType]);
 
   const canSubmit = !validationError;
   const selectedOption = getLoveTypeOption(selectedLoveType);
@@ -121,7 +129,7 @@ export default function CardRegisterPage({ resultType, onComplete, onBrowseCards
   const myCardOption = myCardLoveType ? getLoveTypeOption(myCardLoveType) : selectedOption;
   const myCardLoveTypeName = myCard?.loveTypeName ?? myCardOption?.label ?? selectedOption?.label ?? '';
   const myCardInstagramId = myCard?.instagramId ?? instagramId.trim();
-  const myCardMbti = myCard?.mbti ?? mbti.trim().toUpperCase();
+  const myCardMbti = myCard?.mbti ?? normalizedMbti;
   const myCardIntroduction = myCard?.introduction ?? introduction.trim();
   const myCardEmoji = myCard?.emoji ?? emoji;
   const myTicketCount = myCard?.ticketCount ?? 0;
@@ -207,7 +215,7 @@ export default function CardRegisterPage({ resultType, onComplete, onBrowseCards
       instagramId: instagramId.trim(),
       password,
       gender: gender as Gender,
-      mbti: mbti.trim().toUpperCase() || null,
+      mbti: normalizedMbti,
       introduction: introduction.trim() || null,
       emoji,
       loveTypeCode: getLoveTypeCode(selectedLoveType as TestLoveType),

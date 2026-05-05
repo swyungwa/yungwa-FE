@@ -409,7 +409,7 @@ export default function CardBrowsePage({
             </div>
             {card.mbti && (
               <p className="mt-1 text-sm font-black leading-relaxed text-[#5a3e25]">
-                {card.mbti}
+                {card.mbti.toUpperCase()}
               </p>
             )}
             <p className="mt-1 text-sm font-bold leading-relaxed text-[#5a3e25]">
