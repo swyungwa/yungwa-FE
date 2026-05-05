@@ -30,7 +30,7 @@ const getStoredLoveType = (): LoveType | null => {
 export default function App() {
   const [, setCurrentUser] = useState<AuthData | null>(getSession);
   const [page, setPage] = useState<PageState>(getPageFromPath);
-  const [testResultType, setTestResultType] = useState<LoveType | null>(getStoredLoveType);
+  const [testResultType] = useState<LoveType | null>(getStoredLoveType);
 
   useEffect(() => {
     const handlePopState = () => {
@@ -45,12 +45,6 @@ export default function App() {
     setCurrentUser(data);
     sessionStorage.removeItem(LOVE_TYPE_STORAGE_KEY);
     moveToPage('home');
-  };
-
-  const handleCardRegisterClick = (resultType: LoveType) => {
-    setTestResultType(resultType);
-    sessionStorage.setItem(LOVE_TYPE_STORAGE_KEY, resultType);
-    moveToPage('register');
   };
 
   const moveToPage = (nextPage: PageState) => {
@@ -92,13 +86,13 @@ export default function App() {
             <>
               <HeroSection
                 onTestClick={() => moveToPage('test')}
-                onCreateClick={() => moveToPage('test')}
+                onCreateClick={() => moveToPage('register')}
                 onBrowseClick={() => moveToPage('cards')}
               />
               <TypePreviewSection />
             </>
           ) : page === 'test' ? (
-            <LoveTypeSection onRegister={handleCardRegisterClick} />
+            <LoveTypeSection />
           ) : page === 'register' ? (
             <CardRegisterPage
               resultType={testResultType}

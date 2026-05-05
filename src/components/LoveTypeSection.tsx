@@ -85,11 +85,7 @@ const LOVE_TYPE_PROFILES: Record<LoveType, {
   },
 };
 
-type LoveTypeSectionProps = {
-  onRegister: (resultType: LoveType) => void;
-};
-
-export default function LoveTypeSection({ onRegister }: LoveTypeSectionProps) {
+export default function LoveTypeSection() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [scores, setScores] = useState<ScoreMap>(() => createInitialScores());
   const [resultType, setResultType] = useState<LoveType | null>(null);
@@ -167,7 +163,6 @@ export default function LoveTypeSection({ onRegister }: LoveTypeSectionProps) {
             <Result
               profile={resultProfile}
               onRestart={handleRestart}
-              onRegister={() => onRegister(resultType)}
             />
           ) : (
             <Question
