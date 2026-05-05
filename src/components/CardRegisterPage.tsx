@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type FormEvent } from 'react';
+import { useMemo, useState, type FormEvent } from 'react';
 import { saveSession } from '../services/auth';
 import { CloudCluster, CraneDecor, GoldCornerFrame, HanokRoofDecor, PlumBranch } from '../decorations';
 import type { AuthData, Gender, LoveType as ApiLoveType, SignupRequest } from '../types/auth';
@@ -7,6 +7,8 @@ import type { LoveType as TestLoveType } from '../data/loveTest';
 type CardRegisterPageProps = {
   resultType: TestLoveType | null;
   onComplete: (data: AuthData) => void;
+  onBrowseCards: () => void;
+  onGoHome: () => void;
   onBackToTest: () => void;
 };
 
@@ -45,9 +47,9 @@ const inputStyle = {
 const getLoveTypeOption = (type: TestLoveType | '') =>
   LOVE_TYPE_OPTIONS.find((option) => option.value === type) ?? null;
 
-export default function CardRegisterPage({ resultType, onComplete, onBackToTest }: CardRegisterPageProps) {
-  const [selectedLoveType, setSelectedLoveType] = useState<TestLoveType | ''>(resultType ?? '');
-  const [isTypeListOpen, setIsTypeListOpen] = useState(!resultType);
+export default function CardRegisterPage({ resultType, onComplete, onBrowseCards, onGoHome, onBackToTest }: CardRegisterPageProps) {
+  const [selectedLoveType, setSelectedLoveType] = useState<TestLoveType | ''>(() => resultType ?? '');
+  const [isTypeListOpen, setIsTypeListOpen] = useState(() => !resultType);
   const [instagramId, setInstagramId] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
@@ -58,13 +60,7 @@ export default function CardRegisterPage({ resultType, onComplete, onBackToTest 
   const [showPrivacyNotice, setShowPrivacyNotice] = useState(false);
   const [error, setError] = useState('');
   const [submitted, setSubmitted] = useState(false);
-
-  useEffect(() => {
-    if (resultType) {
-      setSelectedLoveType(resultType);
-      setIsTypeListOpen(false);
-    }
-  }, [resultType]);
+  const [showTicketPanel, setShowTicketPanel] = useState(false);
 
   const passwordMismatch = passwordConfirm.length > 0 && password !== passwordConfirm;
   const passwordMatches = passwordConfirm.length > 0 && password === passwordConfirm && password.length >= 6;
@@ -113,6 +109,139 @@ export default function CardRegisterPage({ resultType, onComplete, onBackToTest 
     setSubmitted(true);
     onComplete(mockAuthData);
   };
+
+  if (submitted && selectedOption) {
+    return (
+      <section
+        className="relative w-full flex-1 overflow-hidden py-10 px-4"
+        style={{
+          background: 'linear-gradient(175deg, #dfc88a 0%, #e8d4a0 20%, #f0e2c2 55%, #ece0b8 100%)',
+        }}
+      >
+        <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage: 'repeating-linear-gradient(0deg, rgba(160,110,40,0.04) 0, rgba(160,110,40,0.04) 1px, transparent 1px, transparent 28px), repeating-linear-gradient(90deg, rgba(160,110,40,0.04) 0, rgba(160,110,40,0.04) 1px, transparent 1px, transparent 28px)',
+            }}
+          />
+          <div className="absolute -top-12 -left-7 origin-top-left scale-[0.62] opacity-30 sm:-top-4 sm:-left-4 sm:scale-100 sm:opacity-42">
+            <PlumBranch />
+          </div>
+          <div className="absolute top-0 right-0 opacity-35">
+            <HanokRoofDecor />
+          </div>
+          <CraneDecor className="absolute top-28 -right-10 scale-[0.72] opacity-[0.13] sm:top-20 sm:right-2 sm:scale-110 sm:opacity-[0.16]" />
+          <div className="absolute top-20 right-0 scale-75 opacity-25 sm:top-14 sm:right-8 sm:scale-100 sm:opacity-45">
+            <CloudCluster />
+          </div>
+          <GoldCornerFrame className="opacity-30" />
+        </div>
+
+        <div
+          className="relative z-10 mx-auto max-w-md rounded-xl p-5 text-center ink-border card-shadow-lg"
+          style={{
+            background: 'linear-gradient(180deg, rgba(248,240,222,0.8) 0%, rgba(242,232,208,0.68) 100%)',
+            backdropFilter: 'blur(1px)',
+          }}
+        >
+          <h2 className="font-serif-kr text-2xl font-black text-[#2e1c0e]">카드가 완성되었소</h2>
+
+          <article
+            className="mt-6 rounded-xl px-4 py-5 text-left card-shadow"
+            style={{
+              background: `linear-gradient(180deg, ${selectedOption.color}16 0%, rgba(255,250,240,0.92) 100%)`,
+              border: `1.5px solid ${selectedOption.color}30`,
+            }}
+          >
+            <div className="flex items-center gap-4">
+              <div
+                className="flex h-28 w-24 shrink-0 items-end justify-center overflow-hidden rounded-xl"
+                style={{
+                  background: `linear-gradient(180deg, ${selectedOption.color}18 0%, #fff7e6 100%)`,
+                  border: `1px solid ${selectedOption.color}30`,
+                }}
+              >
+                <img
+                  src={selectedOption.image}
+                  alt={`${selectedOption.label} 유형`}
+                  className="h-full w-full object-contain object-bottom p-2"
+                />
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs font-black text-[#8b6b45]">연애 유형</p>
+                <h3 className="mt-1 font-serif-kr text-3xl font-black text-[#2e1c0e]">{selectedOption.label}</h3>
+                {emoji && (
+                  <p className="mt-3 text-sm font-bold leading-relaxed text-[#5a3e25]">
+                    대표 이모지: {emoji}
+                  </p>
+                )}
+                <p className="mt-1 text-sm font-bold leading-relaxed text-[#5a3e25]">
+                  한줄 소개: {introduction}
+                </p>
+              </div>
+            </div>
+            <div className="mt-4 rounded-lg bg-[#fff7e6]/80 px-3 py-2 text-sm font-bold text-[#4b301b]">
+              인스타그램 ID: {instagramId.trim()}
+            </div>
+          </article>
+
+          <div className="mt-6 space-y-3 font-serif-kr text-sm font-black leading-relaxed text-[#5a3e25]">
+            <p>
+              다른 인연의 인스타그램 ID를 확인하려면
+              <br />
+              뽑기권이 필요하오
+            </p>
+            <p>
+              뽑기권은 융합소프트웨어학부 부스를 찾아
+              <br />
+              받아보시오
+            </p>
+          </div>
+
+          {showTicketPanel && (
+            <div className="mt-5 rounded-xl border border-[#d4b87a] bg-[#fff7e6] px-4 py-4 text-left">
+              <p className="font-serif-kr text-sm font-black text-[#2e1c0e]">관리자 코드 입력</p>
+              <input
+                type="text"
+                placeholder="관리자 코드를 입력해주시오4"
+                className="mt-3 w-full rounded-lg px-3 py-2.5 text-sm text-[#2e1c0e] outline-none"
+                style={inputStyle}
+              />
+            </div>
+          )}
+
+          <div className="mt-6 flex flex-col gap-3">
+            <button
+              type="button"
+              onClick={() => setShowTicketPanel(true)}
+              className="rounded-xl py-3 font-serif-kr text-sm font-bold text-[#f5e8d0] transition hover:-translate-y-0.5"
+              style={{
+                background: 'linear-gradient(160deg, #c41e32 0%, #8b1220 100%)',
+                boxShadow: '0 4px 16px rgba(140,18,32,0.34)',
+              }}
+            >
+              뽑기권 받기
+            </button>
+            <button
+              type="button"
+              onClick={onBrowseCards}
+              className="rounded-xl border border-[#d4b87a] bg-[#fff7e6] py-3 font-serif-kr text-sm font-bold text-[#4b301b] transition hover:-translate-y-0.5 hover:bg-[#fff0d0]"
+            >
+              다른 인연 살펴보기
+            </button>
+            <button
+              type="button"
+              onClick={onGoHome}
+              className="rounded-xl border border-[#d4b87a] bg-[#fff7e6] py-3 font-serif-kr text-sm font-bold text-[#4b301b] transition hover:-translate-y-0.5 hover:bg-[#fff0d0]"
+            >
+              홈으로 이동
+            </button>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section

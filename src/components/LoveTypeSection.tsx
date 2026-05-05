@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Question from './Question';
 import Result from './Result';
@@ -8,11 +8,94 @@ import {
   createInitialScores,
   getTopType,
   questions,
+  types,
   type Answer,
   type LoveType,
   type ScoreMap,
 } from '../data/loveTest';
 
+const LOVE_TEST_RESULT_STORAGE_KEY = 'loveTestResult';
+
+type StoredLoveTestResult = {
+  type: LoveType;
+  scores?: ScoreMap;
+};
+
+type InitialResultState = {
+  currentIndex: number;
+  scores: ScoreMap;
+  resultType: LoveType | null;
+  shouldRedirectHome: boolean;
+};
+
+const isLoveType = (value: unknown): value is LoveType =>
+  typeof value === 'string' && types.includes(value as LoveType);
+
+const isScoreMap = (value: unknown): value is ScoreMap => {
+  if (!value || typeof value !== 'object') return false;
+
+  const scores = value as Partial<Record<LoveType, unknown>>;
+  return types.every((type) => typeof scores[type] === 'number');
+};
+
+const readStoredLoveTestResult = (): StoredLoveTestResult | null | 'invalid' => {
+  const rawResult = localStorage.getItem(LOVE_TEST_RESULT_STORAGE_KEY);
+  if (!rawResult) return null;
+
+  try {
+    const parsedResult = JSON.parse(rawResult) as Partial<StoredLoveTestResult>;
+
+    if (!isLoveType(parsedResult.type)) return 'invalid';
+    if (parsedResult.scores !== undefined && !isScoreMap(parsedResult.scores)) return 'invalid';
+
+    return {
+      type: parsedResult.type,
+      scores: parsedResult.scores,
+    };
+  } catch {
+    return 'invalid';
+  }
+};
+
+const createInitialResultState = (): InitialResultState => {
+  const storedResult = readStoredLoveTestResult();
+
+  if (storedResult === 'invalid') {
+    localStorage.removeItem(LOVE_TEST_RESULT_STORAGE_KEY);
+    return {
+      currentIndex: 0,
+      scores: createInitialScores(),
+      resultType: null,
+      shouldRedirectHome: true,
+    };
+  }
+
+  if (storedResult) {
+    return {
+      currentIndex: questions.length - 1,
+      scores: storedResult.scores ?? createInitialScores(),
+      resultType: storedResult.type,
+      shouldRedirectHome: false,
+    };
+  }
+
+  return {
+    currentIndex: 0,
+    scores: createInitialScores(),
+    resultType: null,
+    shouldRedirectHome: false,
+  };
+};
+
+const saveLoveTestResult = (type: LoveType, scores: ScoreMap) => {
+  localStorage.setItem(
+    LOVE_TEST_RESULT_STORAGE_KEY,
+    JSON.stringify({
+      type,
+      scores,
+    }),
+  );
+};
 
 const LOVE_TYPE_PROFILES: Record<LoveType, {
   name: string;
@@ -86,21 +169,35 @@ const LOVE_TYPE_PROFILES: Record<LoveType, {
   },
 };
 
-export default function LoveTypeSection() {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [scores, setScores] = useState<ScoreMap>(() => createInitialScores());
-  const [resultType, setResultType] = useState<LoveType | null>(null);
+type LoveTypeSectionProps = {
+  onGoHome: () => void;
+};
+
+export default function LoveTypeSection({ onGoHome }: LoveTypeSectionProps) {
+  const [initialResultState] = useState(createInitialResultState);
+  const [currentIndex, setCurrentIndex] = useState(initialResultState.currentIndex);
+  const [scores, setScores] = useState<ScoreMap>(initialResultState.scores);
+  const [resultType, setResultType] = useState<LoveType | null>(initialResultState.resultType);
 
   const currentQuestion = questions[currentIndex];
   const progressPercent = ((currentIndex + 1) / questions.length) * 100;
   const resultProfile = resultType ? LOVE_TYPE_PROFILES[resultType] : null;
 
+  useEffect(() => {
+    if (initialResultState.shouldRedirectHome) {
+      onGoHome();
+    }
+  }, [initialResultState.shouldRedirectHome, onGoHome]);
+
   const handleSelect = (answer: Answer) => {
     const nextScores = calculateNextScores(scores, answer);
 
     if (currentIndex === questions.length - 1) {
+      const nextResultType = getTopType(nextScores, answer.types);
+
+      saveLoveTestResult(nextResultType, nextScores);
       setScores(nextScores);
-      setResultType(getTopType(nextScores, answer.types));
+      setResultType(nextResultType);
       return;
     }
 
@@ -109,6 +206,7 @@ export default function LoveTypeSection() {
   };
 
   const handleRestart = () => {
+    localStorage.removeItem(LOVE_TEST_RESULT_STORAGE_KEY);
     setCurrentIndex(0);
     setScores(createInitialScores());
     setResultType(null);
@@ -192,7 +290,9 @@ export default function LoveTypeSection() {
           style={{ background: 'rgba(245,237,216,0.8)' }}>
           {resultType && resultProfile ? (
             <Result
+              type={resultType}
               profile={resultProfile}
+              onGoHome={onGoHome}
               onRestart={handleRestart}
             />
           ) : (

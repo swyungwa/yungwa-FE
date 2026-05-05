@@ -44,7 +44,6 @@ export default function App() {
   const handleRegisterComplete = (data: AuthData) => {
     setCurrentUser(data);
     sessionStorage.removeItem(LOVE_TYPE_STORAGE_KEY);
-    moveToPage('home');
   };
 
   const moveToPage = (nextPage: PageState) => {
@@ -92,11 +91,15 @@ export default function App() {
               <TypePreviewSection />
             </>
           ) : page === 'test' ? (
-            <LoveTypeSection />
+            <LoveTypeSection
+              onGoHome={() => moveToPage('home')}
+            />
           ) : page === 'register' ? (
             <CardRegisterPage
               resultType={testResultType}
               onComplete={handleRegisterComplete}
+              onBrowseCards={() => moveToPage('cards')}
+              onGoHome={() => moveToPage('home')}
               onBackToTest={() => moveToPage('test')}
             />
           ) : (
