@@ -142,7 +142,7 @@ export default function HeroSection({ onTestClick, onCreateClick, onBrowseClick 
                 border: '1px solid rgba(255,255,255,0.12)',
               }}
             >
-              카드 둘러보기
+              카드 뽑기
             </button>
           </div>
         </motion.div>

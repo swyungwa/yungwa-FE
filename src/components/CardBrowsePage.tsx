@@ -33,7 +33,7 @@ export default function CardBrowsePage({ onBackHome, onStartTest }: CardBrowsePa
 
           <h1 className="font-serif-kr text-2xl font-black text-[#2e1c0e] mb-2"
             style={{ textShadow: '1px 1px 0 rgba(201,168,76,0.3)' }}>
-            카드 둘러보기
+            카드 뽑기
           </h1>
           <p className="text-[#7a5530] text-sm leading-relaxed mb-8">
             곧 다른 인연들의 연분첩 카드가 이곳에 펼쳐질 예정이오.

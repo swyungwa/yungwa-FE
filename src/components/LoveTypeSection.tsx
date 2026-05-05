@@ -116,7 +116,7 @@ export default function LoveTypeSection() {
 
   return (
     <section
-      className="relative w-full overflow-hidden py-12"
+      className="relative w-full overflow-hidden pt-6 pb-12"
       style={{
         background: 'linear-gradient(175deg, #dfc88a 0%, #e8d4a0 20%, #f0e2c2 55%, #ece0b8 100%)',
       }}
@@ -150,16 +150,16 @@ export default function LoveTypeSection() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.5 }}
-        className="text-center mb-8 px-5"
+        className="text-center mb-6 px-5"
       >
         {/* 상단 선 장식 */}
-        <div className="flex items-center justify-center gap-3 mb-4">
+        <div className="flex items-center justify-center gap-3 mb-2">
           <div className="h-px w-16" style={{ background: 'linear-gradient(to right, transparent, #c9a84c)' }} />
           <span className="text-[#c9a84c]">◆</span>
           <div className="h-px w-16" style={{ background: 'linear-gradient(to left, transparent, #c9a84c)' }} />
         </div>
 
-        <h2 className="font-serif-kr font-black text-2xl sm:text-3xl text-[#2e1c0e] mb-2"
+        <h2 className="font-serif-kr font-black text-2xl sm:text-3xl text-[#2e1c0e] mb-1"
           style={{ textShadow: '1px 1px 0 rgba(201,168,76,0.3)' }}>
           연애 유형 테스트
         </h2>
@@ -169,9 +169,9 @@ export default function LoveTypeSection() {
       {!resultType && (
         <div className="mx-4 mb-4 rounded-xl px-4 py-3 ink-border card-shadow"
           style={{ background: 'rgba(255,247,230,0.7)' }}>
-          <div className="mb-2 flex items-center justify-between text-xs font-black text-[#7c5a2c]">
-            <span>진행률</span>
-            <span>{currentIndex + 1} / {questions.length}</span>
+          <div className="mb-2 flex items-center justify-between">
+            <span className="text-xs font-black text-[#7c5a2c]">진행률</span>
+            <span className="text-xs font-black text-[#7c5a2c]">{currentIndex + 1} / {questions.length}</span>
           </div>
           <div className="h-2 overflow-hidden rounded-full bg-[#d8bd78]/70">
             <div

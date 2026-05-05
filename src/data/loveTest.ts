@@ -11,6 +11,7 @@ export type Question = {
   id: number;
   question: string;
   answers: Answer[];
+  imageUrl?: string;
 };
 
 export type ScoreMap = Record<LoveType, number>;
@@ -32,6 +33,7 @@ export const questions: Question[] = [
       { text: '"부끄럽구려..." 부채로 얼굴을 가리고 슬쩍 바라본다', types: ['yangban', 'satto'] },
       { text: '"거기 잠깐 멈추시오!" 사람들 사이를 헤치고 다가간다', types: ['general', 'clown'] },
     ],
+    imageUrl: '/questions/question1.png',
   },
   {
     id: 2,
@@ -40,6 +42,7 @@ export const questions: Question[] = [
       { text: '"그대 눈빛이 달보다 더 빛나오..." 정성껏 답장을 쓴다', types: ['royal', 'yangban'] },
       { text: '"달 떴으면 이제 잘 시간이오" 짧고 현실적으로 답한다', types: ['satto', 'general'] },
     ],
+    imageUrl: '/questions/question2.png',
   },
   {
     id: 3,
@@ -48,6 +51,7 @@ export const questions: Question[] = [
       { text: '"오죽했겠소..." 말없이 곁에 앉아 다독인다', types: ['dolsoe', 'royal'] },
       { text: '"어찌하여 그리 되었소?" 자초지종을 차분히 묻는다', types: ['satto', 'clown'] },
     ],
+    imageUrl: '/questions/question3.png',
   },
   {
     id: 4,
@@ -56,6 +60,7 @@ export const questions: Question[] = [
       { text: '"잠시 바람 좀 쐬고 다시 이야기합시다" 한 걸음 물러난다', types: ['yangban', 'dolsoe'] },
       { text: '"지금 당장 결판을 냅시다!" 그 자리에서 끝을 보려 한다', types: ['general', 'satto'] },
     ],
+    imageUrl: '/questions/question4.png',
   },
   {
     id: 5,
@@ -64,6 +69,7 @@ export const questions: Question[] = [
       { text: '"어찌 먹고 살 것이오?" 집, 돈, 길부터 따져본다', types: ['satto', 'yangban'] },
       { text: '"짐 싸시오. 내가 책임지겠소" 망설임 없이 함께 떠난다', types: ['general', 'royal'] },
     ],
+    imageUrl: '/questions/question5.png',
   },
   {
     id: 6,
@@ -72,6 +78,7 @@ export const questions: Question[] = [
       { text: '겉으로는 웃지만 속으로는 조용히 거리를 둔다', types: ['yangban', 'satto'] },
       { text: '"이분은 뉘시오?" 자연스럽게 끼어들어 분위기를 살핀다', types: ['clown', 'general'] },
     ],
+    imageUrl: '/questions/question6.png',
   },
   {
     id: 7,
@@ -80,6 +87,7 @@ export const questions: Question[] = [
       { text: '죽을 쑤고 물수건을 갈아주며 밤새 곁을 지킨다', types: ['dolsoe', 'royal'] },
       { text: '"이겨내시오. 내가 여기 있소" 곁에서 씩씩하게 응원한다', types: ['clown', 'general'] },
     ],
+    imageUrl: '/questions/question7.png',
   },
   {
     id: 8,
@@ -88,6 +96,7 @@ export const questions: Question[] = [
       { text: '"이 또한 낭만 아니겠소?" 비를 맞으며 함께 웃는다', types: ['clown', 'royal'] },
       { text: '아무 말 없이 우산을 기울여 상대 쪽으로 씌워준다', types: ['dolsoe', 'yangban'] },
     ],
+    imageUrl: '/questions/question8.png',
   },
   {
     id: 9,
@@ -96,14 +105,16 @@ export const questions: Question[] = [
       { text: '"소인은 그대를 오래도록 연모하였소..." 조심스레 마음을 전한다', types: ['yangban', 'dolsoe'] },
       { text: '"내 사람이 되어주시오!" 망설임 없이 단번에 고백한다', types: ['general', 'royal'] },
     ],
+    imageUrl: '/questions/question9.png',
   },
   {
     id: 10,
-    question: '약속에 늦어 연인이 삐쳐 방문을 닫아버렸다면?',
+    question: '약속에 늦어, 연인이 아무 말 없이 삐쳐 있다면?',
     answers: [
       { text: '"내가 부족하였소..." 문밖에서 먼저 사과한다', types: ['dolsoe', 'clown'] },
       { text: '"무엇이 서운했는지 말해보시오" 차분히 풀어보려 한다', types: ['satto', 'royal'] },
     ],
+    imageUrl: '/questions/question10.png',
   },
 ];
 
