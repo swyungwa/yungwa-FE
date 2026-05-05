@@ -1,6 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { fetchClient, isApiError } from '../lib/api';
+import {
+  trackViewCards,
+  trackUnlockAttempted,
+  trackUnlockSucceeded,
+  trackUnlockFailed,
+  trackTicketGranted,
+  trackUserLoggedOut,
+  resetUser,
+} from '../lib/analytics';
 import { getCurrentUser } from '../services/auth';
 import { grantTicket } from '../services/tickets';
 import { GoldCornerFrame } from '../decorations';
@@ -119,6 +128,11 @@ export default function CardBrowsePage({
   onLoginClick,
   onLogout,
 }: CardBrowsePageProps) {
+  const initialCurrentUser = useRef(currentUser);
+  useEffect(() => {
+    trackViewCards(Boolean(initialCurrentUser.current));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const [cards, setCards] = useState<UserCard[]>([]);
   const [openedCards, setOpenedCards] = useState<UserCard[]>([]);
   const [selectedTab, setSelectedTab] = useState<CardTab>('ALL');
@@ -192,6 +206,8 @@ export default function CardBrowsePage({
   }, [currentUser]);
 
   const handleLogout = () => {
+    trackUserLoggedOut();
+    resetUser();
     localStorage.removeItem('token');
     localStorage.removeItem('userId');
     localStorage.removeItem('instagramId');
@@ -249,6 +265,10 @@ export default function CardBrowsePage({
           }
           : currentViewer,
       );
+      trackTicketGranted({
+        amount,
+        ticketCount: result.ticketCount ?? amount,
+      });
       setTicketMessage('뽑기권을 받았소');
       setIsTicketModalOpen(false);
       setTicketAdminCode('');
@@ -298,6 +318,11 @@ export default function CardBrowsePage({
     const targetCard = cards.find((card) => getCardUserId(card) === targetUserId);
     if (!targetCard || targetCard.instagramId !== 'LOCKED') return;
 
+    trackUnlockAttempted({
+      targetUserId,
+      targetLoveTypeCode: String(targetCard.loveTypeCode ?? targetCard.loveType ?? ''),
+    });
+
     setUnlockStates((states) => ({
       ...states,
       [targetUserId]: {
@@ -310,6 +335,11 @@ export default function CardBrowsePage({
         method: 'POST',
       });
       const unlockedInstagramId = typeof data === 'string' ? data : data.instagramId;
+
+      trackUnlockSucceeded({
+        targetUserId,
+        targetLoveTypeCode: String(targetCard.loveTypeCode ?? targetCard.loveType ?? ''),
+      });
 
       setCards((currentCards) =>
         currentCards.map((card) =>
@@ -334,7 +364,14 @@ export default function CardBrowsePage({
           isLoading: false,
         },
       }));
-    } catch {
+    } catch (err) {
+      const reason =
+        isApiError(err) && (err.errorCode === 'UNAUTHORIZED' || err.errorCode === 'FORBIDDEN')
+          ? 'UNAUTHORIZED'
+          : isApiError(err) && err.errorCode.toUpperCase().includes('TICKET')
+            ? 'NO_TICKET'
+            : 'UNKNOWN';
+      trackUnlockFailed(reason);
       setUnlockStates((states) => ({
         ...states,
         [targetUserId]: {

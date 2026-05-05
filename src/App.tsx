@@ -11,6 +11,7 @@ import { clearSession, getCurrentUser } from './services/auth';
 import { types } from './data/loveTest';
 import type { AuthData } from './types/auth';
 import type { LoveType } from './data/loveTest';
+import { trackTestStarted } from './lib/analytics';
 
 type PageState = 'home' | 'test' | 'register' | 'cards';
 
@@ -126,6 +127,7 @@ export default function App() {
               <HeroSection
                 onTestClick={() => {
                   clearLoveTestState();
+                  trackTestStarted();
                   moveToPage('test');
                 }}
                 onCreateClick={() => moveToPage('register')}

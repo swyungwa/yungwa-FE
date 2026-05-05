@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { getCurrentUser, login, saveSession } from '../services/auth';
+import { identifyUser, trackUserLoggedIn } from '../lib/analytics';
 import type { AuthData } from '../types/auth';
 
 type Props = {
@@ -40,6 +41,8 @@ export default function LoginModal({ onClose, onSuccess }: Props) {
 
       const data = await getCurrentUser(loginData.token);
       saveSession(data);
+      identifyUser(data.userId);
+      trackUserLoggedIn();
       onSuccess(data);
     } catch {
       setError('아이디 또는 비밀번호를 다시 확인하시오');

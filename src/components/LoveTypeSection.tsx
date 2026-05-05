@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { trackTestCompleted, trackTestRestarted } from '../lib/analytics';
 import Question from './Question';
 import Result from './Result';
 import { CloudCluster, CraneDecor, GoldCornerFrame, HanokRoofDecor, PlumBranch } from '../decorations';
@@ -200,6 +201,7 @@ export default function LoveTypeSection({ onGoHome }: LoveTypeSectionProps) {
       saveLoveTestResult(nextResultType, nextScores);
       setScores(nextScores);
       setResultType(nextResultType);
+      trackTestCompleted(nextResultType.toUpperCase());
       return;
     }
 
@@ -208,6 +210,7 @@ export default function LoveTypeSection({ onGoHome }: LoveTypeSectionProps) {
   };
 
   const handleRestart = () => {
+    trackTestRestarted(resultType);
     localStorage.removeItem(LOVE_TEST_RESULT_STORAGE_KEY);
     sessionStorage.removeItem(LOVE_TYPE_STORAGE_KEY);
     setCurrentIndex(0);
