@@ -31,6 +31,7 @@ type UserCard = {
   loveTypeCode?: string | null;
   loveTypeName?: string | null;
   gender: Gender;
+  mbti?: string | null;
   emoji: string | null;
   introduction: string | null;
   instagramId: string;
@@ -406,6 +407,11 @@ export default function CardBrowsePage({
                 {GENDER_LABELS[card.gender]}
               </span>
             </div>
+            {card.mbti && (
+              <p className="mt-1 text-sm font-black leading-relaxed text-[#5a3e25]">
+                {card.mbti}
+              </p>
+            )}
             <p className="mt-1 text-sm font-bold leading-relaxed text-[#5a3e25]">
               {card.introduction || '아직 소개가 없소'}
             </p>

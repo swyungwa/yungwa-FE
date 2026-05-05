@@ -79,6 +79,7 @@ export default function CardRegisterPage({ resultType, onComplete, onBrowseCards
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
   const [gender, setGender] = useState<Gender | ''>('');
+  const [mbti, setMbti] = useState('');
   const [introduction, setIntroduction] = useState('');
   const [emoji, setEmoji] = useState('');
   const [privacyAgreed, setPrivacyAgreed] = useState(false);
@@ -107,11 +108,12 @@ export default function CardRegisterPage({ resultType, onComplete, onBrowseCards
     if (password.length < 6) return '비밀번호는 6자 이상입니다.';
     if (password !== passwordConfirm) return '비밀번호가 일치하지 않습니다.';
     if (!gender) return '성별을 선택해주세요.';
+    if (mbti.trim().length !== 4) return 'MBTI를 입력해주세요.';
     if (!emoji) return '대표 이모지를 선택해주세요.';
     if (!introduction.trim()) return '한줄 소개를 입력해주세요.';
     if (!privacyAgreed) return '개인정보 수집 및 이용에 동의해주세요.';
     return null;
-  }, [emoji, gender, instagramId, introduction, password, passwordConfirm, privacyAgreed, selectedLoveType]);
+  }, [emoji, gender, instagramId, introduction, mbti, password, passwordConfirm, privacyAgreed, selectedLoveType]);
 
   const canSubmit = !validationError;
   const selectedOption = getLoveTypeOption(selectedLoveType);
@@ -119,6 +121,7 @@ export default function CardRegisterPage({ resultType, onComplete, onBrowseCards
   const myCardOption = myCardLoveType ? getLoveTypeOption(myCardLoveType) : selectedOption;
   const myCardLoveTypeName = myCard?.loveTypeName ?? myCardOption?.label ?? selectedOption?.label ?? '';
   const myCardInstagramId = myCard?.instagramId ?? instagramId.trim();
+  const myCardMbti = myCard?.mbti ?? mbti.trim().toUpperCase();
   const myCardIntroduction = myCard?.introduction ?? introduction.trim();
   const myCardEmoji = myCard?.emoji ?? emoji;
   const myTicketCount = myCard?.ticketCount ?? 0;
@@ -204,6 +207,7 @@ export default function CardRegisterPage({ resultType, onComplete, onBrowseCards
       instagramId: instagramId.trim(),
       password,
       gender: gender as Gender,
+      mbti: mbti.trim().toUpperCase() || null,
       introduction: introduction.trim() || null,
       emoji,
       loveTypeCode: getLoveTypeCode(selectedLoveType as TestLoveType),
@@ -379,6 +383,11 @@ export default function CardRegisterPage({ resultType, onComplete, onBrowseCards
             <div className="mt-4 rounded-lg bg-[#fff7e6]/80 px-3 py-2 text-sm font-bold text-[#4b301b]">
               인스타그램 ID: {myCardInstagramId}
             </div>
+            {myCardMbti && (
+              <div className="mt-2 rounded-lg bg-[#fff7e6]/80 px-3 py-2 text-sm font-bold text-[#4b301b]">
+                MBTI: {myCardMbti}
+              </div>
+            )}
             <div className="mt-2 rounded-lg bg-[#fff7e6]/80 px-3 py-2 text-sm font-bold text-[#4b301b]">
               보유 뽑기권: {myTicketCount}장
             </div>
@@ -709,6 +718,25 @@ export default function CardRegisterPage({ resultType, onComplete, onBrowseCards
                 </button>
               ))}
             </div>
+          </div>
+
+          <div>
+            <label className="mb-1.5 block font-serif-kr text-xs font-bold tracking-wide text-[#3d2b1f]">
+              MBTI <span className="text-[#ab1729]">*</span>
+            </label>
+            <input
+              type="text"
+              value={mbti}
+              onChange={(e) => {
+                setMbti(e.target.value.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 4));
+                setError('');
+              }}
+              placeholder="본인의 MBTI를 입력하시오"
+              maxLength={4}
+              className="w-full rounded-lg px-3 py-2.5 text-sm text-[#2e1c0e] outline-none"
+              style={inputStyle}
+              required
+            />
           </div>
 
           <div>
