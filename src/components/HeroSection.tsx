@@ -55,20 +55,6 @@ export default function HeroSection({ onTestClick, onCreateClick, onBrowseClick 
       {/* ── 메인 콘텐츠 ── */}
       <div className="relative z-10 flex flex-col items-center text-center px-6 pt-14 pb-4">
 
-        {/* 소제목 배너 */}
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="flex items-center gap-2 mb-4"
-        >
-          <span className="text-[#c9a84c] text-sm">◈</span>
-          <p className="font-serif-kr text-[#7a5428] text-xs sm:text-sm tracking-[0.2em] font-medium">
-            조선시대 연애 유형으로 만나는 인연
-          </p>
-          <span className="text-[#c9a84c] text-sm">◈</span>
-        </motion.div>
-
         {/* 메인 타이틀 */}
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
@@ -90,10 +76,23 @@ export default function HeroSection({ onTestClick, onCreateClick, onBrowseClick 
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.55, duration: 0.55 }}
-          className="font-sans text-[#6b4825] text-sm sm:text-base leading-relaxed mb-12 max-w-xs"
+          className="font-sans text-[#6b4825] text-sm sm:text-base leading-relaxed mb-5 max-w-xs"
           style={{ textShadow: '0 1px 0 rgba(255,255,255,0.5)' }}
         >
           조선시대 연애 유형으로 만나는 인연
+        </motion.p>
+
+        <motion.p
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.62, duration: 0.45 }}
+          className="mb-5 rounded-full px-4 py-1.5 font-serif-kr text-xs font-bold text-[#7a5428] ink-border"
+          style={{
+            background: 'rgba(255,247,230,0.62)',
+            boxShadow: '0 2px 8px rgba(80,50,10,0.08)',
+          }}
+        >
+          2026.05.06 ~ 2026.05.07
         </motion.p>
 
         {/* CTA 버튼 */}
@@ -113,7 +112,6 @@ export default function HeroSection({ onTestClick, onCreateClick, onBrowseClick 
               boxShadow: '0 6px 20px rgba(140,18,32,0.5), 0 1px 0 rgba(255,255,255,0.15) inset',
               border: '1px solid rgba(255,255,255,0.15)',
             }}>
-            <span className="text-lg">📜</span>
             테스트 시작하기
           </button>
 
@@ -132,7 +130,6 @@ export default function HeroSection({ onTestClick, onCreateClick, onBrowseClick 
                 border: '1px solid rgba(255,255,255,0.13)',
               }}
             >
-              <span className="text-base">🎴</span>
               카드 만들기
             </button>
             <button
@@ -145,7 +142,6 @@ export default function HeroSection({ onTestClick, onCreateClick, onBrowseClick 
                 border: '1px solid rgba(255,255,255,0.12)',
               }}
             >
-              <span className="text-base">🎭</span>
               카드 둘러보기
             </button>
           </div>
