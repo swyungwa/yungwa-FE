@@ -15,15 +15,25 @@ export function isApiError(err: unknown): err is ApiError {
   return err instanceof Error && err.name === 'ApiError';
 }
 
+type FetchClientOptions = RequestInit & {
+  auth?: boolean;
+};
+
 export async function fetchClient<T>(
   path: string,
-  options?: RequestInit,
+  options?: FetchClientOptions,
 ): Promise<T> {
+  const token = localStorage.getItem('token');
+  const shouldIncludeAuth = options?.auth !== false;
+  const requestOptions: RequestInit = { ...options };
+  delete (requestOptions as FetchClientOptions).auth;
+
   const res = await fetch(`${BASE_URL}${path}`, {
-    ...options,
+    ...requestOptions,
     headers: {
       'Content-Type': 'application/json',
-      ...options?.headers,
+      ...(shouldIncludeAuth && token ? { Authorization: `Bearer ${token}` } : {}),
+      ...requestOptions.headers,
     },
   });
 

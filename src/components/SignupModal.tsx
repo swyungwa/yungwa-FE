@@ -56,8 +56,7 @@ export default function SignupModal({ onClose, onSuccess, onSwitchToLogin }: Pro
         instagramId: instagramId.trim(),
         password,
         gender: gender as Gender,
-        loveType: loveType || null,
-        mbti: mbti.trim() || null,
+        loveTypeCode: loveType || null,
         introduction: introduction.trim() || null,
         emoji: emoji.trim() || null,
       });

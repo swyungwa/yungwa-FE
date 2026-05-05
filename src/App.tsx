@@ -5,8 +5,10 @@ import TypePreviewSection from './components/TypePreviewSection';
 import LoveTypeSection from './components/LoveTypeSection';
 import CardRegisterPage from './components/CardRegisterPage';
 import CardBrowsePage from './components/CardBrowsePage';
+import Header from './components/Header';
+import LoginModal from './components/LoginModal';
 import Footer from './components/Footer';
-import { getSession } from './services/auth';
+import { getCurrentUser } from './services/auth';
 import { types } from './data/loveTest';
 import type { AuthData } from './types/auth';
 import type { LoveType } from './data/loveTest';
@@ -28,11 +30,23 @@ const getStoredLoveType = (): LoveType | null => {
 };
 
 export default function App() {
-  const [, setCurrentUser] = useState<AuthData | null>(getSession);
-  const [page, setPage] = useState<PageState>(getPageFromPath);
+  const [currentUser, setCurrentUser] = useState<AuthData | null>(null);
+  const [page, setPage] = useState<PageState>('home');
   const [testResultType] = useState<LoveType | null>(getStoredLoveType);
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
 
   useEffect(() => {
+    if (window.location.pathname !== '/') {
+      window.history.replaceState(null, '', '/');
+    }
+
+    const token = localStorage.getItem('token');
+    if (token) {
+      getCurrentUser(token)
+        .then(setCurrentUser)
+        .catch(() => setCurrentUser(null));
+    }
+
     const handlePopState = () => {
       setPage(getPageFromPath());
     };
@@ -44,6 +58,12 @@ export default function App() {
   const handleRegisterComplete = (data: AuthData) => {
     setCurrentUser(data);
     sessionStorage.removeItem(LOVE_TYPE_STORAGE_KEY);
+  };
+
+  const handleLoginSuccess = (data: AuthData) => {
+    setCurrentUser(data);
+    setIsLoginOpen(false);
+    moveToPage('cards');
   };
 
   const moveToPage = (nextPage: PageState) => {
@@ -80,6 +100,12 @@ export default function App() {
 
       {/* 메인 콘텐츠 컨테이너 */}
       <div className="relative z-10 w-full max-w-[680px] mx-auto flex flex-col min-h-screen">
+        <Header
+          currentUser={currentUser}
+          onLoginClick={() => setIsLoginOpen(true)}
+          onLogout={() => setCurrentUser(null)}
+          onHomeClick={() => moveToPage('home')}
+        />
         <main className="flex-1 flex flex-col">
           {page === 'home' ? (
             <>
@@ -105,12 +131,21 @@ export default function App() {
           ) : (
             <CardBrowsePage
               onBackHome={() => moveToPage('home')}
+              onCreateCard={() => moveToPage('register')}
+              onLoginClick={() => setIsLoginOpen(true)}
               onStartTest={() => moveToPage('test')}
             />
           )}
         </main>
         <Footer />
       </div>
+
+      {isLoginOpen && (
+        <LoginModal
+          onClose={() => setIsLoginOpen(false)}
+          onSuccess={handleLoginSuccess}
+        />
+      )}
     </div>
   );
 }
