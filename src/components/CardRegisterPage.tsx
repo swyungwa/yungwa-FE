@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { getCurrentUser, saveSession, signup } from '../services/auth';
+import { identifyUser, trackCardCreated, trackTicketGranted } from '../lib/analytics';
 import { grantTicket } from '../services/tickets';
 import { isApiError } from '../lib/api';
 import { CloudCluster, CraneDecor, GoldCornerFrame, HanokRoofDecor, PlumBranch } from '../decorations';
@@ -221,6 +222,13 @@ export default function CardRegisterPage({ resultType, onComplete, onBrowseCards
       saveSession(authData);
       setMyCard(authData);
       setSubmitted(true);
+      identifyUser(authData.userId);
+      trackCardCreated({
+        userId: authData.userId,
+        loveTypeCode: getLoveTypeCode(selectedLoveType as TestLoveType),
+        gender,
+        hasEmoji: Boolean(emoji),
+      });
       onComplete(authData);
     } catch (err) {
       setError(isApiError(err) ? err.message : '회원가입에 실패했소.');
@@ -257,6 +265,10 @@ export default function CardRegisterPage({ resultType, onComplete, onBrowseCards
       setMyCard({
         ...nextUser,
         ticketCount: nextUser.ticketCount ?? result.ticketCount ?? myCard?.ticketCount,
+      });
+      trackTicketGranted({
+        amount: parsedTicketAmount,
+        ticketCount: result.ticketCount ?? parsedTicketAmount,
       });
       setTicketMessage('뽑기권을 받았소');
       setTicketGranted(true);
