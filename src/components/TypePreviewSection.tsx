@@ -37,6 +37,7 @@ const PREVIEW_TYPES = [
     keyword: '유머형',
     image: '/characters/gwangdae.png',
     color: '#1a2050',
+    imageClassName: 'scale-125',
   },
 ];
 
@@ -128,7 +129,7 @@ export default function TypePreviewSection() {
                 <img
                   src={type.image}
                   alt={`${type.name} ${type.keyword}`}
-                  className="h-full w-full object-contain p-2"
+                  className={`h-full w-full object-contain p-2 ${type.imageClassName ?? ''}`}
                   loading="lazy"
                 />
               </div>

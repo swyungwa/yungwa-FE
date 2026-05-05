@@ -84,6 +84,7 @@ export default function CardRegisterPage({ resultType, onComplete, onBrowseCards
   const [showPrivacyNotice, setShowPrivacyNotice] = useState(false);
   const [error, setError] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [isRestoringCard, setIsRestoringCard] = useState(() => Boolean(localStorage.getItem('token')));
   const [showTicketPanel, setShowTicketPanel] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [authToken, setAuthToken] = useState(() => localStorage.getItem('token') ?? '');
@@ -122,7 +123,43 @@ export default function CardRegisterPage({ resultType, onComplete, onBrowseCards
   const myTicketCount = myCard?.ticketCount ?? 0;
 
   useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    let isActive = true;
+
+    const restoreMyCard = async () => {
+      try {
+        const data = await getCurrentUser(token);
+        if (!isActive) return;
+
+        saveSession(data);
+        setAuthToken(token);
+        setMyCard(data);
+        setSubmitted(true);
+        setMyCardError('');
+      } catch {
+        if (!isActive) return;
+
+        setMyCard(null);
+        setSubmitted(false);
+      } finally {
+        if (isActive) {
+          setIsRestoringCard(false);
+        }
+      }
+    };
+
+    void restoreMyCard();
+
+    return () => {
+      isActive = false;
+    };
+  }, []);
+
+  useEffect(() => {
     if (!submitted) return;
+    if (myCard) return;
     if (!authToken) {
       onGoHome();
       return;
@@ -149,7 +186,7 @@ export default function CardRegisterPage({ resultType, onComplete, onBrowseCards
     return () => {
       isActive = false;
     };
-  }, [authToken, onGoHome, submitted]);
+  }, [authToken, myCard, onGoHome, submitted]);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -230,6 +267,28 @@ export default function CardRegisterPage({ resultType, onComplete, onBrowseCards
       setIsGrantingTicket(false);
     }
   };
+
+  if (isRestoringCard) {
+    return (
+      <section
+        className="relative flex w-full flex-1 items-center justify-center overflow-hidden px-4 py-10"
+        style={{
+          background: 'linear-gradient(175deg, #dfc88a 0%, #e8d4a0 20%, #f0e2c2 55%, #ece0b8 100%)',
+        }}
+      >
+        <div
+          className="relative z-10 mx-auto max-w-md rounded-xl px-5 py-8 text-center ink-border card-shadow-lg"
+          style={{
+            background: 'linear-gradient(180deg, rgba(248,240,222,0.8) 0%, rgba(242,232,208,0.68) 100%)',
+          }}
+        >
+          <p className="font-serif-kr text-sm font-black text-[#5a3e25]">
+            완성된 연분첩을 불러오는 중이오...
+          </p>
+        </div>
+      </section>
+    );
+  }
 
   if (submitted && myCardOption) {
     return (
@@ -563,7 +622,7 @@ export default function CardRegisterPage({ resultType, onComplete, onBrowseCards
                 setInstagramId(e.target.value);
                 setError('');
               }}
-              placeholder="instagram_id"
+              placeholder="본인의 인스타 아이디를 입력하시오"
               className="w-full rounded-lg px-3 py-2.5 text-sm text-[#2e1c0e] outline-none"
               style={inputStyle}
               required
@@ -582,7 +641,7 @@ export default function CardRegisterPage({ resultType, onComplete, onBrowseCards
                 setPassword(e.target.value);
                 setError('');
               }}
-              placeholder="6자 이상"
+              placeholder="비밀번호는 6자 이상이오"
               className="w-full rounded-lg px-3 py-2.5 text-sm text-[#2e1c0e] outline-none"
               style={inputStyle}
               required
@@ -601,7 +660,7 @@ export default function CardRegisterPage({ resultType, onComplete, onBrowseCards
                 setPasswordConfirm(e.target.value);
                 setError('');
               }}
-              placeholder="비밀번호를 한 번 더 입력"
+              placeholder="비밀번호를 한 번 더 입력하시오"
               className="w-full rounded-lg px-3 py-2.5 text-sm text-[#2e1c0e] outline-none"
               style={inputStyle}
               required
@@ -644,6 +703,9 @@ export default function CardRegisterPage({ resultType, onComplete, onBrowseCards
             <label className="mb-2 block font-serif-kr text-xs font-bold tracking-wide text-[#3d2b1f]">
               대표 이모지 <span className="text-[#ab1729]">*</span>
             </label>
+            <p className="-mt-1 mb-2 text-[11px] font-bold text-[#8b6b45]">
+              자신을 나타낼 상징을 고르시오
+            </p>
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
               {EMOJI_OPTIONS.map((option) => (
                 <button
@@ -678,7 +740,7 @@ export default function CardRegisterPage({ resultType, onComplete, onBrowseCards
                 setIntroduction(e.target.value.slice(0, 30));
                 setError('');
               }}
-              placeholder="나를 한 줄로 소개해보시오"
+              placeholder="본인을 한 줄로 소개해보시오"
               maxLength={30}
               className="w-full rounded-lg px-3 py-2.5 text-sm text-[#2e1c0e] outline-none"
               style={inputStyle}
